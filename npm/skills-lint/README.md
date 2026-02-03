@@ -28,6 +28,9 @@ skills-lint --config my-config.json
 
 # Suppress the ASCII banner (useful in CI)
 skills-lint --quiet
+
+# Disable token-count caching
+skills-lint --no-cache
 ```
 
 ## Configuration
@@ -105,6 +108,10 @@ Override thresholds for specific files:
   ]
 }
 ```
+
+## Caching
+
+Token counts are cached to `.skills-lint-cache/tokens.json` by default. Subsequent runs skip tokenization for unchanged files. Disable with `--no-cache` or set `"cache": false` in the config. Add `.skills-lint-cache/` to your `.gitignore`.
 
 ## Exit codes
 

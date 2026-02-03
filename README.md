@@ -29,6 +29,8 @@ skills-lint
 | `--file <path>` | Lint a single file instead of using config patterns |
 | `--config <path>` | Config file path (default: `.skills-lint.config.json`) |
 | `--quiet` | Suppress the ASCII banner (useful for CI) |
+| `--verbose` | Show all findings including passing rules |
+| `--no-cache` | Disable token-count caching for this run |
 
 ### Exit codes
 
@@ -104,6 +106,10 @@ Apply different thresholds to specific files:
   ]
 }
 ```
+
+## Caching
+
+Token counts are cached to `.skills-lint-cache/tokens.json` by default. Subsequent runs skip tokenization for unchanged files. Disable with `--no-cache` or set `"cache": false` in the config. Add `.skills-lint-cache/` to your `.gitignore`.
 
 ## Building from source
 
