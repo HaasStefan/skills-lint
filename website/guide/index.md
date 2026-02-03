@@ -49,6 +49,7 @@ skills-lint
 
 ## Next
 
-- [Configuration](/guide/configuration) — models, overrides, patterns, skill index budget, skill structure
+- [Configuration](/guide/configuration) — models, overrides, patterns
+- [Rules](/guide/rules) — all six rules: token-limit, frontmatter-limit, skill-index-budget, skill-structure, unique-name, unique-description
 - [CI Integration](/guide/ci-integration) — GitHub Actions setup
 - [CLI Reference](/reference/cli) — flags and output format

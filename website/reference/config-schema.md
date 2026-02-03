@@ -20,6 +20,22 @@ Model name must be one of: `gpt-5`, `gpt-4o`, `gpt-4o-mini`, `gpt-4-turbo`, `gpt
 | `error` | `number` | Yes | — | Error threshold |
 | `encoding` | `string` | No | Auto | Encoding override |
 
+## `rules.frontmatter-limit` <span style="font-weight:normal; font-size:0.85em">(optional)</span>
+
+Counts tokens in just the YAML frontmatter of each file. Same `models` schema as `token-limit` — no per-file overrides.
+
+### `rules.frontmatter-limit.models.<name>`
+
+Model name must be one of: `gpt-5`, `gpt-4o`, `gpt-4o-mini`, `gpt-4-turbo`, `gpt-4`, `gpt-3.5-turbo`.
+
+| Field | Type | Required | Default | Description |
+|-------|------|----------|---------|-------------|
+| `warning` | `number` | Yes | — | Warning threshold for frontmatter |
+| `error` | `number` | Yes | — | Error threshold for frontmatter |
+| `encoding` | `string` | No | Auto | Encoding override |
+
+Omit the entire `frontmatter-limit` key to disable the rule. Files without frontmatter are skipped.
+
 ## `rules.skill-index-budget` <span style="font-weight:normal; font-size:0.85em">(optional)</span>
 
 Aggregates YAML frontmatter from all discovered SKILL.md files and checks the combined token count per model. Same schema as `token-limit` — no per-file overrides.
@@ -46,6 +62,28 @@ Validates the structure of each SKILL.md file: frontmatter presence, `name` and 
 | `false` or absent | Rule is skipped |
 
 Runs in both aggregate and `--file` modes.
+
+## `rules.unique-name` <span style="font-weight:normal; font-size:0.85em">(optional)</span>
+
+Checks that no two skill files share the same `name` in their frontmatter.
+
+| Value | Behavior |
+|-------|----------|
+| `true` | Rule is enabled |
+| `false` or absent | Rule is skipped |
+
+Skipped when using `--file`.
+
+## `rules.unique-description` <span style="font-weight:normal; font-size:0.85em">(optional)</span>
+
+Checks that no two skill files share the same `description` in their frontmatter.
+
+| Value | Behavior |
+|-------|----------|
+| `true` | Rule is enabled |
+| `false` or absent | Rule is skipped |
+
+Skipped when using `--file`.
 
 ## `overrides[]`
 
@@ -83,13 +121,21 @@ Override fields are optional — unspecified fields inherit from global config.
         "gpt-4": { "warning": 2000, "error": 4000 }
       }
     },
+    "frontmatter-limit": {
+      "models": {
+        "gpt-4o": { "warning": 1000, "error": 2000 },
+        "gpt-4": { "warning": 500, "error": 1000 }
+      }
+    },
     "skill-index-budget": {
       "models": {
         "gpt-4o": { "warning": 2000, "error": 4000 },
         "gpt-4": { "warning": 1000, "error": 2000 }
       }
     },
-    "skill-structure": true
+    "skill-structure": true,
+    "unique-name": true,
+    "unique-description": true
   },
   "overrides": [
     {

@@ -14,13 +14,21 @@ Config file: `.skills-lint.config.json` in your project root.
         "gpt-4": { "warning": 2000, "error": 4000 }
       }
     },
+    "frontmatter-limit": {
+      "models": {
+        "gpt-4o": { "warning": 1000, "error": 2000 },
+        "gpt-4": { "warning": 500, "error": 1000 }
+      }
+    },
     "skill-index-budget": {
       "models": {
         "gpt-4o": { "warning": 2000, "error": 4000 },
         "gpt-4": { "warning": 1000, "error": 2000 }
       }
     },
-    "skill-structure": true
+    "skill-structure": true,
+    "unique-name": true,
+    "unique-description": true
   },
   "overrides": [
     {
@@ -70,59 +78,13 @@ Skill files are loaded lazily into the model's context window when activated. Th
 
 Unsupported model names are rejected at config load.
 
-## Skill Index Budget
+## Rules
 
-Agent skills are discovered at startup by reading the YAML frontmatter (`name`, `description`) of every SKILL.md file. All frontmatter snippets are concatenated and injected into the model's context window. A project with many verbose skill descriptions can silently consume a large chunk of context before any skill is even activated.
-
-The `skill-index-budget` rule aggregates all SKILL.md frontmatter, counts its tokens per model, and checks against configurable thresholds. It uses the same `models` structure as `token-limit`.
-
-```json
-{
-  "rules": {
-    "skill-index-budget": {
-      "models": {
-        "gpt-4o": { "warning": 2000, "error": 4000 },
-        "gpt-4": { "warning": 1000, "error": 2000 }
-      }
-    }
-  }
-}
-```
-
-In the output table, the aggregate result appears as a `(skill index)` row. It is not counted in the "across N files" summary.
-
-::: tip
-This rule only runs in aggregate mode (all files). It is skipped when using `--file` to lint a single file.
-:::
-
-This rule is optional. If the `skill-index-budget` key is omitted, the rule is silently skipped.
-
-## Skill Structure
-
-The `skill-structure` rule validates the structure of each SKILL.md file:
-
-1. Has YAML frontmatter (`---` delimiters)
-2. Frontmatter contains `name` with a non-empty string value
-3. Frontmatter contains `description` with a non-empty string value
-4. Body after frontmatter is non-empty
-
-```json
-{
-  "rules": {
-    "skill-structure": true
-  }
-}
-```
-
-Each file produces a single finding: `✓ PASS` with message "valid" if all checks pass, or `✗ ERROR` with a comma-separated list of issues (e.g. "missing name, empty body").
-
-Results appear in a separate **Structure** table in the output.
-
-This rule is optional. Set to `true` to enable. If the key is absent or `false`, the rule is silently skipped. Unlike `skill-index-budget`, this rule runs in both aggregate and `--file` single-file modes.
+See the [Rules](/guide/rules) page for detailed documentation of all six rules: `token-limit`, `frontmatter-limit`, `skill-index-budget`, `skill-structure`, `unique-name`, and `unique-description`.
 
 ## Overrides
 
-Per-file threshold overrides:
+Per-file threshold overrides (applies to `token-limit` only):
 
 ```json
 {

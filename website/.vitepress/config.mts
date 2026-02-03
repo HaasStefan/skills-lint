@@ -26,6 +26,7 @@ export default defineConfig({
           items: [
             { text: 'Getting Started', link: '/guide/' },
             { text: 'Configuration', link: '/guide/configuration' },
+            { text: 'Rules', link: '/guide/rules' },
             { text: 'CI Integration', link: '/guide/ci-integration' },
           ],
         },
