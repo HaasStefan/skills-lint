@@ -5,7 +5,7 @@ Token budget linter for agent skill files. Counts tokens per model encoding and 
 ## Installation
 
 ```sh
-npm install -g skills-lint
+npm install -g @haasstefan/skills-lint
 ```
 
 Pre-built binaries are available for:

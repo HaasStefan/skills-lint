@@ -1,5 +1,5 @@
 {
-  "name": "skills-lint-win32-x64",
+  "name": "@haasstefan/skills-lint-win32-x64",
   "version": "0.1.0",
   "description": "skills-lint binary for Windows x64",
   "license": "MIT",

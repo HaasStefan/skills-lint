@@ -1,5 +1,5 @@
 {
-  "name": "skills-lint-linux-arm64",
+  "name": "@haasstefan/skills-lint-linux-arm64",
   "version": "0.1.0",
   "description": "skills-lint binary for Linux ARM64",
   "license": "MIT",

@@ -115,7 +115,7 @@ jobs:
         id: check
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          if npm view "skills-lint@$VERSION" version 2>/dev/null; then
+          if npm view "@haasstefan/skills-lint@$VERSION" version 2>/dev/null; then
             echo "Version $VERSION already published, skipping"
             echo "skip=true" >> "$GITHUB_OUTPUT"
           else
@@ -136,10 +136,10 @@ jobs:
             skills-lint-linux-arm64 \
             skills-lint-win32-x64 \
             skills-lint-win32-arm64; do
-            if npm view "$pkg@$VERSION" version 2>/dev/null; then
-              echo "$pkg@$VERSION already published, skipping"
+            if npm view "@haasstefan/$pkg@$VERSION" version 2>/dev/null; then
+              echo "@haasstefan/$pkg@$VERSION already published, skipping"
             else
-              echo "Publishing $pkg@$VERSION..."
+              echo "Publishing @haasstefan/$pkg@$VERSION..."
               cd "npm/$pkg"
               npm pack
               npm publish *.tgz --access public

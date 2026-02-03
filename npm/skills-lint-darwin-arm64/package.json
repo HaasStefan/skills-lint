@@ -1,5 +1,5 @@
 {
-  "name": "skills-lint-darwin-arm64",
+  "name": "@haasstefan/skills-lint-darwin-arm64",
   "version": "0.1.0",
   "description": "skills-lint binary for macOS ARM64",
   "license": "MIT",
