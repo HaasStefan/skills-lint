@@ -1,0 +1,152 @@
+name: Release
+
+on:
+  push:
+    branches: [master]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - target: aarch64-apple-darwin
+            runner: macos-latest
+            npm-package: skills-lint-darwin-arm64
+            binary: skills-lint
+          - target: x86_64-apple-darwin
+            runner: macos-13
+            npm-package: skills-lint-darwin-x64
+            binary: skills-lint
+          - target: x86_64-unknown-linux-gnu
+            runner: ubuntu-latest
+            npm-package: skills-lint-linux-x64
+            binary: skills-lint
+          - target: aarch64-unknown-linux-gnu
+            runner: ubuntu-latest
+            npm-package: skills-lint-linux-arm64
+            binary: skills-lint
+          - target: x86_64-pc-windows-msvc
+            runner: windows-latest
+            npm-package: skills-lint-win32-x64
+            binary: skills-lint.exe
+          - target: aarch64-pc-windows-msvc
+            runner: windows-latest
+            npm-package: skills-lint-win32-arm64
+            binary: skills-lint.exe
+
+    runs-on: ${{ matrix.runner }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install cross-compiler (Linux ARM64)
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu
+
+      - name: Build
+        env:
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: ${{ matrix.target == 'aarch64-unknown-linux-gnu' && 'aarch64-linux-gnu-gcc' || '' }}
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Copy binary to npm package
+        shell: bash
+        run: |
+          mkdir -p npm/${{ matrix.npm-package }}/bin
+          cp target/${{ matrix.target }}/release/${{ matrix.binary }} npm/${{ matrix.npm-package }}/bin/${{ matrix.binary }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.npm-package }}
+          path: npm/${{ matrix.npm-package }}
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: npm
+
+      - name: Read version from Cargo.toml
+        id: version
+        run: |
+          VERSION=$(grep '^version' skills-lint/Cargo.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Version: $VERSION"
+
+      - name: Sync version to all package.json files
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          for pkg_json in npm/*/package.json; do
+            tmp=$(mktemp)
+            jq --arg v "$VERSION" '
+              .version = $v |
+              if .optionalDependencies then
+                .optionalDependencies |= with_entries(.value = $v)
+              else . end
+            ' "$pkg_json" > "$tmp"
+            mv "$tmp" "$pkg_json"
+          done
+          echo "Patched all package.json files to version $VERSION"
+
+      - name: Check if version already published
+        id: check
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          if npm view "skills-lint@$VERSION" version 2>/dev/null; then
+            echo "Version $VERSION already published, skipping"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Version $VERSION not yet published"
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish platform packages
+        if: steps.check.outputs.skip != 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          for pkg in \
+            skills-lint-darwin-arm64 \
+            skills-lint-darwin-x64 \
+            skills-lint-linux-x64 \
+            skills-lint-linux-arm64 \
+            skills-lint-win32-x64 \
+            skills-lint-win32-arm64; do
+            echo "Publishing $pkg..."
+            npm publish "npm/$pkg" --access public
+          done
+
+      - name: Publish root package
+        if: steps.check.outputs.skip != 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish npm/skills-lint --access public
+
+      - name: Tag release
+        if: steps.check.outputs.skip != 'true'
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          git tag "v$VERSION"
+          git push origin "v$VERSION"
