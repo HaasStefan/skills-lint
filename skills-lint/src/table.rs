@@ -33,110 +33,187 @@ fn status_text(severity: Severity) -> &'static str {
     }
 }
 
+fn colored_rule_name(name: &str, severity: Severity) -> String {
+    match severity {
+        Severity::Pass => name.green().to_string(),
+        Severity::Warning => name.yellow().bold().to_string(),
+        Severity::Error => name.red().bold().to_string(),
+    }
+}
+
+fn colored_status(severity: Severity) -> String {
+    let text = status_text(severity);
+    match severity {
+        Severity::Pass => text.green().to_string(),
+        Severity::Warning => text.yellow().bold().to_string(),
+        Severity::Error => text.red().bold().to_string(),
+    }
+}
+
+/// Build a token-limit sub-table (no File column) for a set of findings.
+fn build_token_table(findings: &[&skills_lint_core::types::LintFinding]) -> Table {
+    let mut table = Table::new();
+    table
+        .load_preset(UTF8_FULL_CONDENSED)
+        .apply_modifier(UTF8_ROUND_CORNERS)
+        .set_content_arrangement(ContentArrangement::Dynamic)
+        .set_header(vec![
+            Cell::new("Model").add_attribute(Attribute::Bold),
+            Cell::new("Tokens")
+                .set_alignment(CellAlignment::Right)
+                .add_attribute(Attribute::Bold),
+            Cell::new("Warning")
+                .set_alignment(CellAlignment::Right)
+                .add_attribute(Attribute::Bold),
+            Cell::new("Error")
+                .set_alignment(CellAlignment::Right)
+                .add_attribute(Attribute::Bold),
+            Cell::new("Status").add_attribute(Attribute::Bold),
+        ]);
+
+    for finding in findings {
+        let color = severity_color(finding.severity);
+
+        let mut tokens_cell = Cell::new(format_number(finding.token_count))
+            .set_alignment(CellAlignment::Right)
+            .fg(color);
+        if finding.severity == Severity::Error {
+            tokens_cell = tokens_cell.add_attribute(Attribute::Bold);
+        }
+
+        let mut status_cell = Cell::new(status_text(finding.severity)).fg(color);
+        if finding.severity != Severity::Pass {
+            status_cell = status_cell.add_attribute(Attribute::Bold);
+        }
+
+        table.add_row(vec![
+            Cell::new(&finding.model),
+            tokens_cell,
+            Cell::new(format_number(finding.warning_threshold))
+                .set_alignment(CellAlignment::Right)
+                .fg(Color::DarkGrey),
+            Cell::new(format_number(finding.error_threshold))
+                .set_alignment(CellAlignment::Right)
+                .fg(Color::DarkGrey),
+            status_cell,
+        ]);
+    }
+
+    table
+}
+
 pub fn print_report(report: &LintReport) {
     if report.findings.is_empty() && report.structure_findings.is_empty() {
         println!("  {}", "No files found to lint.".dimmed());
         return;
     }
 
-    if !report.findings.is_empty() {
-        let mut table = Table::new();
-        table
-            .load_preset(UTF8_FULL_CONDENSED)
-            .apply_modifier(UTF8_ROUND_CORNERS)
-            .set_content_arrangement(ContentArrangement::Dynamic)
-            .set_header(vec![
-                Cell::new("File").add_attribute(Attribute::Bold),
-                Cell::new("Model").add_attribute(Attribute::Bold),
-                Cell::new("Tokens")
-                    .set_alignment(CellAlignment::Right)
-                    .add_attribute(Attribute::Bold),
-                Cell::new("Warning")
-                    .set_alignment(CellAlignment::Right)
-                    .add_attribute(Attribute::Bold),
-                Cell::new("Error")
-                    .set_alignment(CellAlignment::Right)
-                    .add_attribute(Attribute::Bold),
-                Cell::new("Status").add_attribute(Attribute::Bold),
-            ]);
-
-        let mut prev_file: Option<&str> = None;
-        for finding in &report.findings {
-            let file_cell = if prev_file == Some(&finding.file) {
-                Cell::new("  ┆").fg(Color::DarkGrey)
-            } else {
-                Cell::new(&finding.file)
-            };
-            prev_file = Some(&finding.file);
-
-            let color = severity_color(finding.severity);
-
-            let mut tokens_cell = Cell::new(format_number(finding.token_count))
-                .set_alignment(CellAlignment::Right)
-                .fg(color);
-            if finding.severity == Severity::Error {
-                tokens_cell = tokens_cell.add_attribute(Attribute::Bold);
-            }
-
-            let mut status_cell = Cell::new(status_text(finding.severity)).fg(color);
-            if finding.severity != Severity::Pass {
-                status_cell = status_cell.add_attribute(Attribute::Bold);
-            }
-
-            table.add_row(vec![
-                file_cell,
-                Cell::new(&finding.model),
-                tokens_cell,
-                Cell::new(format_number(finding.warning_threshold))
-                    .set_alignment(CellAlignment::Right)
-                    .fg(Color::DarkGrey),
-                Cell::new(format_number(finding.error_threshold))
-                    .set_alignment(CellAlignment::Right)
-                    .fg(Color::DarkGrey),
-                status_cell,
-            ]);
+    // Collect unique file paths in order (excluding aggregate label).
+    let mut file_paths: Vec<&str> = Vec::new();
+    for f in &report.structure_findings {
+        if !file_paths.contains(&f.file.as_str()) {
+            file_paths.push(&f.file);
         }
-
-        println!("{table}");
+    }
+    for f in &report.findings {
+        if f.file != AGGREGATE_LABEL && !file_paths.contains(&f.file.as_str()) {
+            file_paths.push(&f.file);
+        }
     }
 
-    if !report.structure_findings.is_empty() {
-        let mut table = Table::new();
-        table
-            .load_preset(UTF8_FULL_CONDENSED)
-            .apply_modifier(UTF8_ROUND_CORNERS)
-            .set_content_arrangement(ContentArrangement::Dynamic)
-            .set_header(vec![
-                Cell::new("File").add_attribute(Attribute::Bold),
-                Cell::new("Structure").add_attribute(Attribute::Bold),
-                Cell::new("Status").add_attribute(Attribute::Bold),
-            ]);
+    let has_aggregate = report.findings.iter().any(|f| f.file == AGGREGATE_LABEL);
+    let total_sections = file_paths.len() + if has_aggregate { 1 } else { 0 };
+    let mut section_idx = 0;
 
-        let mut prev_file: Option<&str> = None;
-        for finding in &report.structure_findings {
-            let file_cell = if prev_file == Some(&finding.file) {
-                Cell::new("  ┆").fg(Color::DarkGrey)
-            } else {
-                Cell::new(&finding.file)
-            };
-            prev_file = Some(&finding.file);
+    // Print each file section.
+    for file_path in &file_paths {
+        println!("  {}", file_path.bold());
 
-            let color = severity_color(finding.severity);
+        // Gather which rules apply to this file.
+        let structure = report
+            .structure_findings
+            .iter()
+            .find(|f| f.file == *file_path);
+        let token_findings: Vec<&_> = report
+            .findings
+            .iter()
+            .filter(|f| f.file == *file_path)
+            .collect();
 
-            let message_cell = Cell::new(&finding.message).fg(color);
+        let has_tokens = !token_findings.is_empty();
 
-            let mut status_cell = Cell::new(status_text(finding.severity)).fg(color);
-            if finding.severity != Severity::Pass {
-                status_cell = status_cell.add_attribute(Attribute::Bold);
+        // Structure finding (inline rule).
+        if let Some(sf) = structure {
+            let is_last = !has_tokens;
+            let connector = if is_last { "└─" } else { "├─" };
+            println!(
+                "  {} {}   {}   {}",
+                connector.dimmed(),
+                colored_rule_name("skill-structure", sf.severity),
+                sf.message,
+                colored_status(sf.severity),
+            );
+            if !is_last {
+                println!("  {}", "│".dimmed());
             }
-
-            table.add_row(vec![file_cell, message_cell, status_cell]);
         }
 
-        println!("{table}");
+        // Token-limit findings (sub-table rule).
+        if has_tokens {
+            let worst = token_findings
+                .iter()
+                .map(|f| f.severity)
+                .max()
+                .unwrap_or(Severity::Pass);
+            println!(
+                "  {} {}",
+                "└─".dimmed(),
+                colored_rule_name("token-limit", worst),
+            );
+
+            let table = build_token_table(&token_findings);
+            for line in table.to_string().lines() {
+                println!("     {line}");
+            }
+        }
+
+        section_idx += 1;
+        println!();
+        if section_idx < total_sections {
+            println!("  {}", "─".repeat(50).dimmed());
+            println!();
+        }
     }
 
-    // Summary — count across both finding types
+    // Aggregate (skill index) section.
+    if has_aggregate {
+        let aggregate_findings: Vec<&_> = report
+            .findings
+            .iter()
+            .filter(|f| f.file == AGGREGATE_LABEL)
+            .collect();
+
+        println!("  {}", AGGREGATE_LABEL.bold());
+
+        let worst = aggregate_findings
+            .iter()
+            .map(|f| f.severity)
+            .max()
+            .unwrap_or(Severity::Pass);
+        println!(
+            "  {} {}",
+            "└─".dimmed(),
+            colored_rule_name("skill-index-budget", worst),
+        );
+
+        let table = build_token_table(&aggregate_findings);
+        for line in table.to_string().lines() {
+            println!("     {line}");
+        }
+        println!();
+    }
+
+    // Summary — count across both finding types.
     let total_token = report.findings.len();
     let total_structure = report.structure_findings.len();
     let total = total_token + total_structure;
@@ -187,7 +264,6 @@ pub fn print_report(report: &LintReport) {
         parts.push(format!("{}", format!("{errors} errors").red().bold()));
     }
 
-    println!();
     println!(
         "  {} {} across {} {}",
         "Results:".bold(),
