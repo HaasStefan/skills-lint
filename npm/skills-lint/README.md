@@ -40,18 +40,11 @@ Create a `.skills-lint.config.json` in your project root:
   "rules": {
     "token-limit": {
       "models": {
-        "opus-4.5": {
-          "encoding": "cl100k_base",
-          "warning": 8000,
-          "error": 12000
-        },
-        "sonnet-4.5": {
-          "encoding": "cl100k_base",
-          "warning": 8000,
-          "error": 12000
-        },
         "gpt-4o": {
-          "encoding": "o200k_base",
+          "warning": 8000,
+          "error": 12000
+        },
+        "gpt-4": {
           "warning": 8000,
           "error": 12000
         }
@@ -61,15 +54,28 @@ Create a `.skills-lint.config.json` in your project root:
 }
 ```
 
+### Supported models
+
+| Model | Encoding |
+|---|---|
+| `gpt-5` | `o200k_base` |
+| `gpt-4o` | `o200k_base` |
+| `gpt-4o-mini` | `o200k_base` |
+| `gpt-4-turbo` | `cl100k_base` |
+| `gpt-4` | `cl100k_base` |
+| `gpt-3.5-turbo` | `cl100k_base` |
+
+The encoding is automatically selected based on the model name.
+
 ### Fields
 
 | Field | Description |
 |---|---|
 | `patterns` | Glob patterns to discover skill files |
 | `rules.token-limit.models` | Per-model token counting configuration |
-| `models.<name>.encoding` | Tokenizer encoding (`cl100k_base`, `o200k_base`, `p50k_base`, `r50k_base`) |
 | `models.<name>.warning` | Token count threshold for warnings |
 | `models.<name>.error` | Token count threshold for errors |
+| `models.<name>.encoding` | (Optional) override the default tokenizer encoding |
 
 ### Per-file overrides
 
@@ -81,7 +87,7 @@ Override thresholds for specific files:
   "rules": {
     "token-limit": {
       "models": {
-        "opus-4.5": { "encoding": "cl100k_base", "warning": 8000, "error": 12000 }
+        "gpt-4o": { "warning": 8000, "error": 12000 }
       }
     }
   },
@@ -91,7 +97,7 @@ Override thresholds for specific files:
       "rules": {
         "token-limit": {
           "models": {
-            "opus-4.5": { "warning": 16000, "error": 24000 }
+            "gpt-4o": { "warning": 16000, "error": 24000 }
           }
         }
       }

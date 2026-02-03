@@ -12,7 +12,7 @@ const banner = `███████╗██╗  ██╗██╗██╗  
 <template>
   <div class="ascii-hero">
     <div class="ascii-banner">
-      <pre class="ansi-white">{{ banner }}</pre>
+      <pre>{{ banner }}</pre>
       <h1 class="ascii-fallback">skills-lint</h1>
     </div>
     <p class="ascii-tagline">Token budget linter for agent skill files</p>
@@ -41,7 +41,7 @@ const banner = `███████╗██╗  ██╗██╗██╗  
 }
 
 .ascii-tagline {
-  color: #6a6a8a;
+  color: var(--vp-c-text-3);
   font-size: 1.1rem;
   margin: 0 0 32px;
 }

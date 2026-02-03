@@ -41,7 +41,7 @@ mod tests {
             warning: 8000,
             error: 12000,
         };
-        let finding = check("test.md", "opus-4.5", "Hello", &budget).unwrap();
+        let finding = check("test.md", "gpt-4", "Hello", &budget).unwrap();
         assert_eq!(finding.severity, Severity::Pass);
     }
 }

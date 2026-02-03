@@ -1,6 +1,6 @@
 # Large Skill
 
-This skill has an override for opus-4.5 with higher thresholds.
+This skill has an override for gpt-4o with higher thresholds.
 
 ## Overview
 

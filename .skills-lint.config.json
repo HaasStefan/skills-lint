@@ -3,23 +3,19 @@
   "rules": {
     "token-limit": {
       "models": {
-        "opus-4.5": {
-          "encoding": "cl100k_base",
-          "warning": 8000,
-          "error": 12000
-        },
-        "sonnet-4.5": {
-          "encoding": "cl100k_base",
-          "warning": 8000,
-          "error": 12000
-        },
         "gpt-5": {
-          "encoding": "o200k_base",
           "warning": 8000,
           "error": 12000
         },
         "gpt-4o": {
-          "encoding": "o200k_base",
+          "warning": 8000,
+          "error": 12000
+        },
+        "gpt-4o-mini": {
+          "warning": 8000,
+          "error": 12000
+        },
+        "gpt-4": {
           "warning": 8000,
           "error": 12000
         }
@@ -32,7 +28,7 @@
       "rules": {
         "token-limit": {
           "models": {
-            "opus-4.5": { "warning": 16000, "error": 24000 }
+            "gpt-4o": { "warning": 16000, "error": 24000 }
           }
         }
       }

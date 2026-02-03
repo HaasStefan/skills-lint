@@ -1,41 +1,47 @@
-/* Brand color overrides — white */
+/* Brand color overrides — light mode: black, dark mode: white */
 :root {
+  --vp-c-brand-1: #1a1a1a;
+  --vp-c-brand-2: #333333;
+  --vp-c-brand-3: #4d4d4d;
+  --vp-c-brand-soft: rgba(0, 0, 0, 0.08);
+  --vp-button-brand-bg: #1a1a1a;
+  --vp-button-brand-hover-bg: #333333;
+  --vp-button-brand-active-bg: #000000;
+  --vp-button-brand-text: #ffffff;
+}
+
+.dark {
   --vp-c-brand-1: #ffffff;
   --vp-c-brand-2: #e0e0e0;
   --vp-c-brand-3: #cccccc;
-  --vp-c-brand-soft: rgba(255, 255, 255, 0.14);
+  --vp-c-brand-soft: rgba(255, 255, 255, 0.08);
   --vp-button-brand-bg: #ffffff;
   --vp-button-brand-hover-bg: #e0e0e0;
   --vp-button-brand-active-bg: #cccccc;
   --vp-button-brand-text: #000000;
 }
 
-/* Terminal palette */
+/* Terminal palette — always dark regardless of theme */
 .home-terminal {
   --term-bg: #0a0a0f;
-  --term-bg-light: #0e0e16;
   --term-titlebar: #050508;
   --term-dot-red: #ff5f56;
   --term-dot-yellow: #ffbd2e;
   --term-dot-green: #27c93f;
   --term-text: #c0c0d0;
   --term-border: #1e1e2e;
-  --brand: #ffffff;
 }
 
-/* ANSI color simulation */
+/* ANSI color classes (used inside terminal windows) */
 .ansi-green { color: #27c93f; }
 .ansi-yellow { color: #ffbd2e; }
 .ansi-red { color: #ff5f56; }
-.ansi-white { color: #ffffff; }
 .ansi-dim { color: #6a6a8a; }
 .ansi-bold { font-weight: 700; }
 
-/* Landing page */
+/* Landing page base */
 .home-terminal {
   font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', Menlo, Consolas, monospace;
-  color: var(--term-text);
-  min-height: 100vh;
 }
 
 /* Terminal window chrome */
@@ -70,7 +76,7 @@
   text-align: center;
   font-size: 0.75rem;
   color: #6a6a8a;
-  margin-right: 48px; /* balance dots */
+  margin-right: 48px;
 }
 
 .terminal-body {
@@ -78,13 +84,15 @@
   font-size: 0.85rem;
   line-height: 1.6;
   overflow-x: auto;
+  color: var(--term-text);
 }
 
-/* ASCII banner responsive scaling */
+/* ASCII banner */
 .ascii-banner pre {
   font-size: clamp(0.35rem, 1.2vw, 0.85rem);
   line-height: 1.15;
   overflow-x: auto;
+  color: var(--vp-c-text-1);
 }
 
 @media (max-width: 640px) {
@@ -100,7 +108,7 @@
   display: none;
   font-size: 2rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--vp-c-text-1);
 }
 
 /* Feature card grid */
@@ -123,25 +131,26 @@
 }
 
 .feature-card {
-  background: var(--term-bg);
-  border: 1px solid var(--term-border);
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-border);
   border-radius: 8px;
   padding: 20px;
   transition: border-color 0.2s;
 }
 
 .feature-card:hover {
-  border-color: #ffffff;
+  border-color: var(--vp-c-text-2);
 }
 
 .feature-card h3 {
-  color: #ffffff;
+  color: var(--vp-c-text-1);
   font-size: 0.95rem;
   margin: 0 0 8px 0;
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', Menlo, Consolas, monospace;
 }
 
 .feature-card p {
-  color: var(--term-text);
+  color: var(--vp-c-text-2);
   font-size: 0.8rem;
   margin: 0;
   line-height: 1.5;
@@ -184,25 +193,24 @@
 }
 
 .cta-btn--primary {
-  background: #ffffff;
-  color: #000000;
-  border: 1px solid #ffffff;
+  background: var(--vp-c-text-1);
+  color: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-text-1);
 }
 
 .cta-btn--primary:hover {
-  background: #e0e0e0;
-  border-color: #e0e0e0;
+  opacity: 0.85;
 }
 
 .cta-btn--secondary {
   background: transparent;
-  color: var(--term-text);
-  border: 1px solid var(--term-border);
+  color: var(--vp-c-text-2);
+  border: 1px solid var(--vp-c-border);
 }
 
 .cta-btn--secondary:hover {
-  border-color: #ffffff;
-  color: #ffffff;
+  border-color: var(--vp-c-text-1);
+  color: var(--vp-c-text-1);
 }
 
 /* Reset VitePress styles inside terminal components */
@@ -221,7 +229,7 @@
   border: none !important;
 }
 
-/* Section spacing + centering */
+/* Section spacing */
 .home-section {
   max-width: 900px;
   margin: 0 auto;

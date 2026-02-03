@@ -49,13 +49,11 @@ Create a `.skills-lint.config.json` in your project root:
   "rules": {
     "token-limit": {
       "models": {
-        "opus-4.5": {
-          "encoding": "cl100k_base",
+        "gpt-4o": {
           "warning": 8000,
           "error": 12000
         },
-        "gpt-4o": {
-          "encoding": "o200k_base",
+        "gpt-4": {
           "warning": 8000,
           "error": 12000
         }
@@ -65,13 +63,26 @@ Create a `.skills-lint.config.json` in your project root:
 }
 ```
 
+### Supported models
+
+| Model | Encoding |
+|---|---|
+| `gpt-5` | `o200k_base` |
+| `gpt-4o` | `o200k_base` |
+| `gpt-4o-mini` | `o200k_base` |
+| `gpt-4-turbo` | `cl100k_base` |
+| `gpt-4` | `cl100k_base` |
+| `gpt-3.5-turbo` | `cl100k_base` |
+
+The encoding is automatically selected based on the model name. You can override it with the optional `encoding` field.
+
 ### Fields
 
 - **patterns** -- glob patterns to discover skill files
-- **rules.token-limit.models** -- map of model name to `{ encoding, warning, error }`
-  - `encoding` -- tokenizer encoding (`cl100k_base`, `o200k_base`, etc.)
+- **rules.token-limit.models** -- map of model name to `{ warning, error }`
   - `warning` -- token count threshold for warnings
   - `error` -- token count threshold for errors
+  - `encoding` -- (optional) override the default tokenizer encoding
 
 ### Overrides
 
@@ -85,7 +96,7 @@ Apply different thresholds to specific files:
       "rules": {
         "token-limit": {
           "models": {
-            "opus-4.5": { "warning": 16000, "error": 24000 }
+            "gpt-4o": { "warning": 16000, "error": 24000 }
           }
         }
       }

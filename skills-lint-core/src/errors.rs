@@ -8,6 +8,9 @@ pub enum LintError {
     #[error("failed to parse config file '{0}': {1}")]
     ConfigParse(String, #[source] serde_json::Error),
 
+    #[error("unsupported model '{0}'. Supported models: {1:?}")]
+    UnsupportedModel(String, Vec<&'static str>),
+
     #[error("unknown encoding: {0}")]
     UnknownEncoding(String),
 

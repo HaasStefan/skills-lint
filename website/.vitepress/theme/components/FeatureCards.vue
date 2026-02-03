@@ -1,28 +1,28 @@
 <script setup lang="ts">
 const features = [
   {
-    title: 'Multi-Model Budgets',
-    description: 'Define per-model token limits with different encodings. Compare how skill files tokenize across Claude, GPT, and more.',
+    title: 'Multi-Model',
+    description: 'Lint against gpt-4o, gpt-4, gpt-3.5-turbo and more. Each model uses its correct tiktoken encoding.',
   },
   {
-    title: '6 Platform Binaries',
-    description: 'Pre-built native binaries for macOS (ARM64, x64), Linux (x64, ARM64), and Windows (x64, ARM64).',
+    title: '6 Platforms',
+    description: 'Pre-built binaries for macOS, Linux, and Windows — ARM64 and x64.',
   },
   {
     title: 'CI-Friendly',
-    description: 'Distinct exit codes for pass, warning, and error. Use --quiet to suppress the banner in automated pipelines.',
+    description: 'Exit codes 0/1/2/3 for pass/error/warning/runtime. Use --quiet in pipelines.',
   },
   {
-    title: 'Override Support',
-    description: 'Apply different thresholds to specific files. Grant larger budgets to complex skills without loosening global limits.',
+    title: 'Overrides',
+    description: 'Per-file thresholds. Give specific skills a larger budget without changing global limits.',
   },
   {
-    title: 'Fast Rust Core',
-    description: 'Built in Rust with tiktoken encodings. Tokenize hundreds of files in milliseconds.',
+    title: 'Rust + tiktoken',
+    description: 'Tokenizes with tiktoken-rs. Handles hundreds of files in milliseconds.',
   },
   {
-    title: 'npm Distribution',
-    description: 'Install globally via npm. Platform-specific optional dependencies auto-select the right binary.',
+    title: 'npm Install',
+    description: 'npm install -g and go. Optional deps pick the right binary for your platform.',
   },
 ]
 </script>
