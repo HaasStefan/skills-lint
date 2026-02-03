@@ -10,7 +10,7 @@ const BANNER: &str = "\
 
 pub fn print_banner() {
     for line in BANNER.lines() {
-        println!("{}", line.cyan());
+        println!("{}", line.white().bold());
     }
     println!(
         "\n  {}\n",

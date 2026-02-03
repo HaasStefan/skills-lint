@@ -1,0 +1,233 @@
+/* Brand color overrides — white */
+:root {
+  --vp-c-brand-1: #ffffff;
+  --vp-c-brand-2: #e0e0e0;
+  --vp-c-brand-3: #cccccc;
+  --vp-c-brand-soft: rgba(255, 255, 255, 0.14);
+  --vp-button-brand-bg: #ffffff;
+  --vp-button-brand-hover-bg: #e0e0e0;
+  --vp-button-brand-active-bg: #cccccc;
+  --vp-button-brand-text: #000000;
+}
+
+/* Terminal palette */
+.home-terminal {
+  --term-bg: #0a0a0f;
+  --term-bg-light: #0e0e16;
+  --term-titlebar: #050508;
+  --term-dot-red: #ff5f56;
+  --term-dot-yellow: #ffbd2e;
+  --term-dot-green: #27c93f;
+  --term-text: #c0c0d0;
+  --term-border: #1e1e2e;
+  --brand: #ffffff;
+}
+
+/* ANSI color simulation */
+.ansi-green { color: #27c93f; }
+.ansi-yellow { color: #ffbd2e; }
+.ansi-red { color: #ff5f56; }
+.ansi-white { color: #ffffff; }
+.ansi-dim { color: #6a6a8a; }
+.ansi-bold { font-weight: 700; }
+
+/* Landing page */
+.home-terminal {
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', Menlo, Consolas, monospace;
+  color: var(--term-text);
+  min-height: 100vh;
+}
+
+/* Terminal window chrome */
+.terminal-window {
+  background: var(--term-bg);
+  border: 1px solid var(--term-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.terminal-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: var(--term-titlebar);
+  border-bottom: 1px solid var(--term-border);
+}
+
+.terminal-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.terminal-dot--red { background: var(--term-dot-red); }
+.terminal-dot--yellow { background: var(--term-dot-yellow); }
+.terminal-dot--green { background: var(--term-dot-green); }
+
+.terminal-title {
+  flex: 1;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #6a6a8a;
+  margin-right: 48px; /* balance dots */
+}
+
+.terminal-body {
+  padding: 20px;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+/* ASCII banner responsive scaling */
+.ascii-banner pre {
+  font-size: clamp(0.35rem, 1.2vw, 0.85rem);
+  line-height: 1.15;
+  overflow-x: auto;
+}
+
+@media (max-width: 640px) {
+  .ascii-banner pre {
+    display: none;
+  }
+  .ascii-banner .ascii-fallback {
+    display: block;
+  }
+}
+
+.ascii-banner .ascii-fallback {
+  display: none;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* Feature card grid */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 960px) {
+  .feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.feature-card {
+  background: var(--term-bg);
+  border: 1px solid var(--term-border);
+  border-radius: 8px;
+  padding: 20px;
+  transition: border-color 0.2s;
+}
+
+.feature-card:hover {
+  border-color: #ffffff;
+}
+
+.feature-card h3 {
+  color: #ffffff;
+  font-size: 0.95rem;
+  margin: 0 0 8px 0;
+}
+
+.feature-card p {
+  color: var(--term-text);
+  font-size: 0.8rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Copy button */
+.copy-btn {
+  background: transparent;
+  border: 1px solid var(--term-border);
+  color: var(--term-text);
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-family: inherit;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.copy-btn:hover {
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+/* CTA buttons */
+.cta-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cta-btn {
+  display: inline-block;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.cta-btn--primary {
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #ffffff;
+}
+
+.cta-btn--primary:hover {
+  background: #e0e0e0;
+  border-color: #e0e0e0;
+}
+
+.cta-btn--secondary {
+  background: transparent;
+  color: var(--term-text);
+  border: 1px solid var(--term-border);
+}
+
+.cta-btn--secondary:hover {
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+/* Reset VitePress styles inside terminal components */
+.home-terminal pre {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.home-terminal table,
+.home-terminal th,
+.home-terminal td {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Section spacing + centering */
+.home-section {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.home-section + .home-section {
+  padding-top: 0;
+}

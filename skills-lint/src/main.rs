@@ -50,7 +50,7 @@ fn main() {
     let pb = ProgressBar::new(files.len() as u64);
     pb.set_style(
         ProgressStyle::with_template(
-            "  {spinner:.cyan} Evaluating [{bar:30.cyan/dim}] {pos}/{len}  {msg}",
+            "  {spinner:.white} Evaluating [{bar:30.white/dim}] {pos}/{len}  {msg}",
         )
         .unwrap()
         .progress_chars("━╸─"),
