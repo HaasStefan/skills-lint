@@ -69,12 +69,14 @@ pub fn lint_file(file: &str, content: &str) -> StructureFinding {
     let issues = check_file(content);
     if issues.is_empty() {
         StructureFinding {
+            rule: "skill-structure".to_string(),
             file: file.to_string(),
             message: "valid".to_string(),
             severity: Severity::Pass,
         }
     } else {
         StructureFinding {
+            rule: "skill-structure".to_string(),
             file: file.to_string(),
             message: issues.join(", "),
             severity: Severity::Error,

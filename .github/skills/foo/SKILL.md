@@ -1,5 +1,5 @@
 ---
-name:
+name: bar
 description: Performs the foo operation with input validation and schema checking.
 ---
 

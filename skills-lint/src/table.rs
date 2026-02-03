@@ -163,10 +163,11 @@ pub fn print_report(report: &LintReport, verbose: bool) {
         println!("  {}", file_path.bold());
 
         // Gather which rules apply to this file.
-        let structure = report
+        let structure_findings: Vec<&_> = report
             .structure_findings
             .iter()
-            .find(|f| f.file == *file_path);
+            .filter(|f| f.file == *file_path)
+            .collect();
 
         // Partition findings by rule.
         let frontmatter_findings: Vec<&_> = report
@@ -200,28 +201,34 @@ pub fn print_report(report: &LintReport, verbose: bool) {
                 .collect()
         };
 
-        let show_structure = structure
-            .map(|sf| verbose || is_notable(sf.severity))
-            .unwrap_or(false);
+        let visible_structure: Vec<&_> = if verbose {
+            structure_findings.clone()
+        } else {
+            structure_findings
+                .iter()
+                .filter(|f| is_notable(f.severity))
+                .copied()
+                .collect()
+        };
         let has_visible_frontmatter = !visible_frontmatter_findings.is_empty();
         let has_visible_tokens = !visible_token_findings.is_empty();
 
-        // Structure finding (inline rule).
-        if let Some(sf) = structure {
-            if show_structure {
-                let is_last = !has_visible_frontmatter && !has_visible_tokens;
-                let connector = if is_last { "└─" } else { "├─" };
-                println!(
-                    "  {} {}   {}   {}",
-                    connector.dimmed(),
-                    colored_rule_name("skill-structure", sf.severity),
-                    sf.message,
-                    colored_status(sf.severity),
-                );
-                if !is_last {
-                    println!("  {}", "│".dimmed());
-                }
-            }
+        // Structure findings (inline rules).
+        let has_subtable = has_visible_frontmatter || has_visible_tokens;
+        for (i, sf) in visible_structure.iter().enumerate() {
+            let is_last_inline = i + 1 == visible_structure.len();
+            let is_last = is_last_inline && !has_subtable;
+            let connector = if is_last { "└─" } else { "├─" };
+            println!(
+                "  {} {}   {}   {}",
+                connector.dimmed(),
+                colored_rule_name(&sf.rule, sf.severity),
+                sf.message,
+                colored_status(sf.severity),
+            );
+        }
+        if !visible_structure.is_empty() && has_subtable {
+            println!("  {}", "│".dimmed());
         }
 
         // Frontmatter-limit findings (sub-table rule).

@@ -33,6 +33,7 @@ pub struct LintFinding {
 /// A structural validation finding for one file.
 #[derive(Debug, Clone)]
 pub struct StructureFinding {
+    pub rule: String,
     pub file: String,
     pub message: String,
     pub severity: Severity,

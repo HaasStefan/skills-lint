@@ -22,6 +22,8 @@
       }
     },
     "skill-structure": true,
+    "unique-name": true,
+    "unique-description": true,
     "frontmatter-limit": {
       "models": {
         "gpt-5": {

@@ -3,7 +3,7 @@ use std::path::Path;
 use crate::config::Config;
 use crate::discovery;
 use crate::errors::LintError;
-use crate::rules::{frontmatter_limit, skill_index_budget, skill_structure, token_limit};
+use crate::rules::{frontmatter_limit, skill_index_budget, skill_structure, token_limit, unique_fields};
 use crate::types::{LintFinding, LintReport, StructureFinding};
 
 /// Discover files based on config patterns.
@@ -58,6 +58,7 @@ pub fn run(config: &Config) -> Result<LintReport, LintError> {
     }
 
     findings.extend(skill_index_budget::check_all(config, &files)?);
+    structure_findings.extend(unique_fields::check_all(config, &files)?);
     Ok(LintReport::new(findings, structure_findings))
 }
 

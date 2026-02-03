@@ -46,6 +46,10 @@ pub struct RulesConfig {
     pub frontmatter_limit: Option<FrontmatterLimitConfig>,
     #[serde(rename = "skill-structure", default)]
     pub skill_structure: Option<bool>,
+    #[serde(rename = "unique-name", default)]
+    pub unique_name: Option<bool>,
+    #[serde(rename = "unique-description", default)]
+    pub unique_description: Option<bool>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
