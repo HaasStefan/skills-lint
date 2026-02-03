@@ -140,7 +140,10 @@ jobs:
               echo "$pkg@$VERSION already published, skipping"
             else
               echo "Publishing $pkg@$VERSION..."
-              npm publish "./npm/$pkg" --access public
+              cd "npm/$pkg"
+              npm pack
+              npm publish *.tgz --access public
+              cd ../..
             fi
           done
 
@@ -148,7 +151,10 @@ jobs:
         if: steps.check.outputs.skip != 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish ./npm/skills-lint --access public
+        run: |
+          cd npm/skills-lint
+          npm pack
+          npm publish *.tgz --access public
 
       - name: Tag release
         if: steps.check.outputs.skip != 'true'
