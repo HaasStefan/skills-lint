@@ -34,6 +34,12 @@ pub struct Config {
     pub rules: RulesConfig,
     #[serde(default)]
     pub overrides: Vec<OverrideEntry>,
+    #[serde(default = "default_cache")]
+    pub cache: bool,
+}
+
+fn default_cache() -> bool {
+    true
 }
 
 #[derive(Debug, Clone, Deserialize)]

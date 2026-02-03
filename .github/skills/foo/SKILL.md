@@ -1,9 +1,9 @@
 ---
-name: bar
+name: bar3
 description: Performs the foo operation with input validation and schema checking.
 ---
 
-# Foo Skill
+# Foo Skill 1
 
 This is a small test skill file that should pass all token limits.
 

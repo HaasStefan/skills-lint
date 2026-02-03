@@ -1,12 +1,11 @@
 use std::path::Path;
 
-use crate::config::Config;
+use crate::cache::TokenCache;
+use crate::config::{Config, ResolvedBudget};
 use crate::errors::LintError;
 use crate::rules::skill_index_budget::extract_frontmatter;
 use crate::rules::token_limit;
 use crate::types::LintFinding;
-
-use crate::config::ResolvedBudget;
 
 /// Check frontmatter token count for a single file against a resolved budget for one model.
 pub fn check(
@@ -14,14 +13,15 @@ pub fn check(
     model: &str,
     frontmatter: &str,
     budget: &ResolvedBudget,
+    cache: Option<&mut TokenCache>,
 ) -> Result<LintFinding, LintError> {
-    token_limit::check("frontmatter-limit", file, model, frontmatter, budget)
+    token_limit::check("frontmatter-limit", file, model, frontmatter, budget, cache)
 }
 
 /// Check a single file's frontmatter against the frontmatter-limit rule for all configured models.
 ///
 /// Returns an empty vec if the rule is not configured or the file has no frontmatter.
-pub fn check_file(config: &Config, file: &str) -> Result<Vec<LintFinding>, LintError> {
+pub fn check_file(config: &Config, file: &str, mut cache: Option<&mut TokenCache>) -> Result<Vec<LintFinding>, LintError> {
     let fl = match config.rules.frontmatter_limit.as_ref() {
         Some(fl) => fl,
         None => return Ok(Vec::new()),
@@ -41,7 +41,7 @@ pub fn check_file(config: &Config, file: &str) -> Result<Vec<LintFinding>, LintE
     let mut findings = Vec::new();
     for model in &model_names {
         if let Some(budget) = config.resolve_frontmatter_limit(model) {
-            findings.push(check(file, model, &frontmatter, &budget)?);
+            findings.push(check(file, model, &frontmatter, &budget, cache.as_deref_mut())?);
         }
     }
 
@@ -60,7 +60,7 @@ mod tests {
             warning: 8000,
             error: 12000,
         };
-        let finding = check("test.md", "gpt-4", "name: tiny", &budget).unwrap();
+        let finding = check("test.md", "gpt-4", "name: tiny", &budget, None).unwrap();
         assert_eq!(finding.severity, Severity::Pass);
         assert_eq!(finding.rule, "frontmatter-limit");
     }
@@ -73,7 +73,7 @@ mod tests {
             error: 2,
         };
         let big = "word ".repeat(100);
-        let finding = check("test.md", "gpt-4", &big, &budget).unwrap();
+        let finding = check("test.md", "gpt-4", &big, &budget, None).unwrap();
         assert_eq!(finding.severity, Severity::Error);
         assert_eq!(finding.rule, "frontmatter-limit");
     }

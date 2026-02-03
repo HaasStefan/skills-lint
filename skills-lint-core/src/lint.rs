@@ -1,5 +1,6 @@
 use std::path::Path;
 
+use crate::cache::TokenCache;
 use crate::config::Config;
 use crate::discovery;
 use crate::errors::LintError;
@@ -12,7 +13,7 @@ pub fn discover(config: &Config) -> Result<Vec<String>, LintError> {
 }
 
 /// Lint a single file against all configured models. Returns token findings for that file.
-pub fn lint_file(config: &Config, file: &str) -> Result<Vec<LintFinding>, LintError> {
+pub fn lint_file(config: &Config, file: &str, mut cache: Option<&mut TokenCache>) -> Result<Vec<LintFinding>, LintError> {
     let content = std::fs::read_to_string(Path::new(file))
         .map_err(|e| LintError::FileRead(file.to_string(), e))?;
 
@@ -22,12 +23,12 @@ pub fn lint_file(config: &Config, file: &str) -> Result<Vec<LintFinding>, LintEr
     let mut findings = Vec::new();
     for model in &model_names {
         if let Some(budget) = config.resolve_token_limit(file, model) {
-            let finding = token_limit::check("token-limit", file, model, &content, &budget)?;
+            let finding = token_limit::check("token-limit", file, model, &content, &budget, cache.as_deref_mut())?;
             findings.push(finding);
         }
     }
 
-    findings.extend(frontmatter_limit::check_file(config, file)?);
+    findings.extend(frontmatter_limit::check_file(config, file, cache)?);
 
     Ok(findings)
 }
@@ -50,24 +51,46 @@ pub fn run(config: &Config) -> Result<LintReport, LintError> {
     let mut findings = Vec::new();
     let mut structure_findings = Vec::new();
 
+    let mut cache = if config.cache {
+        Some(TokenCache::load())
+    } else {
+        None
+    };
+
     for file in &files {
-        findings.extend(lint_file(config, file)?);
+        findings.extend(lint_file(config, file, cache.as_mut())?);
         if let Some(sf) = check_structure(config, file)? {
             structure_findings.push(sf);
         }
     }
 
-    findings.extend(skill_index_budget::check_all(config, &files)?);
+    findings.extend(skill_index_budget::check_all(config, &files, cache.as_mut())?);
     structure_findings.extend(unique_fields::check_all(config, &files)?);
+
+    if let Some(ref c) = cache {
+        c.flush();
+    }
+
     Ok(LintReport::new(findings, structure_findings))
 }
 
 /// Run the lint pipeline on a single file.
 pub fn run_single(config: &Config, file_path: &str) -> Result<LintReport, LintError> {
-    let findings = lint_file(config, file_path)?;
+    let mut cache = if config.cache {
+        Some(TokenCache::load())
+    } else {
+        None
+    };
+
+    let findings = lint_file(config, file_path, cache.as_mut())?;
     let mut structure_findings = Vec::new();
     if let Some(sf) = check_structure(config, file_path)? {
         structure_findings.push(sf);
     }
+
+    if let Some(ref c) = cache {
+        c.flush();
+    }
+
     Ok(LintReport::new(findings, structure_findings))
 }

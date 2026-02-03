@@ -9,6 +9,7 @@ use std::process;
 use clap::Parser;
 use colored::Colorize;
 use indicatif::{ProgressBar, ProgressStyle};
+use skills_lint_core::cache::TokenCache;
 use skills_lint_core::config::Config;
 use skills_lint_core::lint;
 use skills_lint_core::rules::{skill_index_budget, unique_fields};
@@ -56,6 +57,13 @@ fn run_lint(args: Cli) {
         process::exit(0);
     }
 
+    let use_cache = config.cache && !args.no_cache;
+    let mut cache = if use_cache {
+        Some(TokenCache::load())
+    } else {
+        None
+    };
+
     let pb = ProgressBar::new(files.len() as u64);
     pb.set_style(
         ProgressStyle::with_template(
@@ -74,7 +82,7 @@ fn run_lint(args: Cli) {
             .unwrap_or(file);
         pb.set_message(short_name.to_string());
 
-        match lint::lint_file(&config, file) {
+        match lint::lint_file(&config, file, cache.as_mut()) {
             Ok(findings) => all_findings.extend(findings),
             Err(e) => {
                 pb.finish_and_clear();
@@ -97,7 +105,7 @@ fn run_lint(args: Cli) {
     pb.finish_and_clear();
 
     if args.file.is_none() {
-        match skill_index_budget::check_all(&config, &files) {
+        match skill_index_budget::check_all(&config, &files, cache.as_mut()) {
             Ok(findings) => all_findings.extend(findings),
             Err(e) => {
                 eprintln!("{} {e}", "error:".red().bold());
@@ -111,6 +119,10 @@ fn run_lint(args: Cli) {
                 process::exit(3);
             }
         }
+    }
+
+    if let Some(ref c) = cache {
+        c.flush();
     }
 
     let report = LintReport::new(all_findings, all_structure_findings);

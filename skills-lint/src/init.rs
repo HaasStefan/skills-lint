@@ -138,6 +138,7 @@ pub fn run() {
                 "{} wrote {CONFIG_PATH}",
                 "done:".green().bold()
             );
+            update_gitignore();
         }
         Err(e) => {
             eprintln!(
@@ -189,6 +190,55 @@ fn build_config(pattern: &str, models: &[&str], optional_rules: &[&str]) -> Valu
         "patterns": [pattern],
         "rules": rules,
     })
+}
+
+const CACHE_IGNORE_ENTRY: &str = ".skills-lint-cache/";
+
+fn update_gitignore() {
+    let path = Path::new(".gitignore");
+    if !path.exists() {
+        println!(
+            "{}",
+            "tip: add .skills-lint-cache/ to your .gitignore".dimmed()
+        );
+        return;
+    }
+
+    let content = match std::fs::read_to_string(path) {
+        Ok(c) => c,
+        Err(_) => {
+            println!(
+                "{}",
+                "tip: add .skills-lint-cache/ to your .gitignore".dimmed()
+            );
+            return;
+        }
+    };
+
+    if content.lines().any(|line| line.trim() == CACHE_IGNORE_ENTRY) {
+        return;
+    }
+
+    let separator = if content.ends_with('\n') || content.is_empty() {
+        ""
+    } else {
+        "\n"
+    };
+
+    match std::fs::write(path, format!("{content}{separator}{CACHE_IGNORE_ENTRY}\n")) {
+        Ok(()) => {
+            println!(
+                "{} added {CACHE_IGNORE_ENTRY} to .gitignore",
+                "done:".green().bold()
+            );
+        }
+        Err(_) => {
+            println!(
+                "{}",
+                "tip: add .skills-lint-cache/ to your .gitignore".dimmed()
+            );
+        }
+    }
 }
 
 fn build_model_budgets(

@@ -21,6 +21,10 @@ pub struct Cli {
     /// Show all findings including passing rules
     #[arg(long)]
     pub verbose: bool,
+
+    /// Disable token-count caching
+    #[arg(long)]
+    pub no_cache: bool,
 }
 
 #[derive(Subcommand, Debug)]

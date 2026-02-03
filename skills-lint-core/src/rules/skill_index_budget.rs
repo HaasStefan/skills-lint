@@ -1,5 +1,6 @@
 use std::path::Path;
 
+use crate::cache::TokenCache;
 use crate::config::{Config, ResolvedBudget};
 use crate::errors::LintError;
 use crate::rules::token_limit;
@@ -39,14 +40,15 @@ pub fn check(
     aggregated: &str,
     model: &str,
     budget: &ResolvedBudget,
+    cache: Option<&mut TokenCache>,
 ) -> Result<LintFinding, LintError> {
-    token_limit::check("skill-index-budget", AGGREGATE_LABEL, model, aggregated, budget)
+    token_limit::check("skill-index-budget", AGGREGATE_LABEL, model, aggregated, budget, cache)
 }
 
 /// Check all discovered files' frontmatter against the skill-index-budget rule.
 ///
 /// Returns an empty vec if the rule is not configured.
-pub fn check_all(config: &Config, files: &[String]) -> Result<Vec<LintFinding>, LintError> {
+pub fn check_all(config: &Config, files: &[String], mut cache: Option<&mut TokenCache>) -> Result<Vec<LintFinding>, LintError> {
     if config.rules.skill_index_budget.is_none() {
         return Ok(Vec::new());
     }
@@ -69,7 +71,7 @@ pub fn check_all(config: &Config, files: &[String]) -> Result<Vec<LintFinding>, 
     let mut findings = Vec::new();
     for model in &model_names {
         if let Some(budget) = config.resolve_skill_index_budget(model) {
-            findings.push(check(&aggregated, model, &budget)?);
+            findings.push(check(&aggregated, model, &budget, cache.as_deref_mut())?);
         }
     }
 
@@ -121,7 +123,7 @@ mod tests {
             warning: 8000,
             error: 12000,
         };
-        let finding = check("name: tiny", "gpt-4", &budget).unwrap();
+        let finding = check("name: tiny", "gpt-4", &budget, None).unwrap();
         assert_eq!(finding.severity, Severity::Pass);
         assert_eq!(finding.file, AGGREGATE_LABEL);
     }
@@ -135,7 +137,7 @@ mod tests {
         };
         // Generate enough text to exceed 2 tokens
         let big = "word ".repeat(100);
-        let finding = check(&big, "gpt-4", &budget).unwrap();
+        let finding = check(&big, "gpt-4", &budget, None).unwrap();
         assert_eq!(finding.severity, Severity::Error);
     }
 }
