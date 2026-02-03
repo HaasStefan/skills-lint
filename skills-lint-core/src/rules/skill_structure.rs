@@ -8,7 +8,7 @@ pub fn check_file(content: &str) -> Vec<String> {
     let fm = match extract_frontmatter(content) {
         Some(fm) => fm,
         None => {
-            issues.push("missing frontmatter".to_string());
+            issues.push("invalid frontmatter".to_string());
             return issues;
         }
     };
@@ -101,11 +101,11 @@ mod tests {
     fn test_missing_frontmatter() {
         let content = "# Just a heading\nSome content\n";
         let issues = check_file(content);
-        assert_eq!(issues, vec!["missing frontmatter"]);
+        assert_eq!(issues, vec!["invalid frontmatter"]);
 
         let finding = lint_file("test.md", content);
         assert_eq!(finding.severity, Severity::Error);
-        assert!(finding.message.contains("missing frontmatter"));
+        assert!(finding.message.contains("invalid frontmatter"));
     }
 
     #[test]

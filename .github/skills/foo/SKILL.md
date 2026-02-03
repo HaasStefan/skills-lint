@@ -1,5 +1,5 @@
 ---
-name: foo
+name:
 description: Performs the foo operation with input validation and schema checking.
 ---
 
