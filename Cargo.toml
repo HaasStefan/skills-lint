@@ -1,0 +1,3 @@
+[workspace]
+members = ["skills-lint", "skills-lint-core"]
+resolver = "2"

@@ -1,0 +1,41 @@
+{
+  "patterns": ["./.github/**/SKILL.md"],
+  "rules": {
+    "token-limit": {
+      "models": {
+        "opus-4.5": {
+          "encoding": "cl100k_base",
+          "warning": 8000,
+          "error": 12000
+        },
+        "sonnet-4.5": {
+          "encoding": "cl100k_base",
+          "warning": 8000,
+          "error": 12000
+        },
+        "gpt-5": {
+          "encoding": "o200k_base",
+          "warning": 8000,
+          "error": 12000
+        },
+        "gpt-4o": {
+          "encoding": "o200k_base",
+          "warning": 8000,
+          "error": 12000
+        }
+      }
+    }
+  },
+  "overrides": [
+    {
+      "files": [".github/skills/large-skill/SKILL.md"],
+      "rules": {
+        "token-limit": {
+          "models": {
+            "opus-4.5": { "warning": 16000, "error": 24000 }
+          }
+        }
+      }
+    }
+  ]
+}
