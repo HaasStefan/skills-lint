@@ -12,6 +12,7 @@ skills-lint [OPTIONS]
 | `--config <path>` | `.skills-lint.config.json` | Config file path |
 | `--quiet` | `false` | Hide the ASCII banner |
 | `--verbose` | `false` | Show all findings including passing rules |
+| `--no-cache` | `false` | Disable token-count caching (see [Caching](/guide/caching)) |
 | `--help` | — | Print help |
 | `--version` | — | Print version |
 

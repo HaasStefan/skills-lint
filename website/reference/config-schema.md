@@ -9,6 +9,7 @@ Reference for `.skills-lint.config.json`.
 | `patterns` | `string[]` | Yes | Glob patterns for skill files |
 | `rules` | `object` | Yes | Rule config (see below) |
 | `overrides` | `object[]` | No | Per-file overrides (applies to `token-limit` only) |
+| `cache` | `boolean` | No | Enable token-count caching (default: `true`, see [Caching](/guide/caching)) |
 
 ## `rules.token-limit.models.<name>`
 
