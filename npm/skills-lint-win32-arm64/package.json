@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/HaasStefan/skills-lint.git"
+    "url": "git+https://github.com/HaasStefan/skills-lint.git"
   },
   "os": ["win32"],
   "cpu": ["arm64"],
