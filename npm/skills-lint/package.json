@@ -1,0 +1,39 @@
+{
+  "name": "skills-lint",
+  "version": "0.1.0",
+  "description": "Token budget linter for agent skill files",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HaasStefan/skills-lint.git"
+  },
+  "homepage": "https://github.com/HaasStefan/skills-lint",
+  "bugs": {
+    "url": "https://github.com/HaasStefan/skills-lint/issues"
+  },
+  "keywords": [
+    "lint",
+    "linter",
+    "tokens",
+    "token-budget",
+    "skills",
+    "agent",
+    "llm",
+    "markdown"
+  ],
+  "bin": {
+    "skills-lint": "bin/skills-lint"
+  },
+  "files": [
+    "bin",
+    "README.md"
+  ],
+  "optionalDependencies": {
+    "skills-lint-darwin-arm64": "0.1.0",
+    "skills-lint-darwin-x64": "0.1.0",
+    "skills-lint-linux-x64": "0.1.0",
+    "skills-lint-linux-arm64": "0.1.0",
+    "skills-lint-win32-x64": "0.1.0",
+    "skills-lint-win32-arm64": "0.1.0"
+  }
+}

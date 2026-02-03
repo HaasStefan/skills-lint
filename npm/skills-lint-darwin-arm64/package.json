@@ -1,0 +1,18 @@
+{
+  "name": "skills-lint-darwin-arm64",
+  "version": "0.1.0",
+  "description": "skills-lint binary for macOS ARM64",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HaasStefan/skills-lint.git"
+  },
+  "os": ["darwin"],
+  "cpu": ["arm64"],
+  "bin": {
+    "skills-lint": "bin/skills-lint"
+  },
+  "files": [
+    "bin"
+  ]
+}
