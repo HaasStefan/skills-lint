@@ -123,6 +123,34 @@ jobs:
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Debug publish environment
+        if: steps.check.outputs.skip != 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          echo "=== npm version ==="
+          npm --version
+          echo "=== node version ==="
+          node --version
+          echo "=== .npmrc location ==="
+          echo "NPM_CONFIG_USERCONFIG=$NPM_CONFIG_USERCONFIG"
+          echo "=== .npmrc contents (redacted) ==="
+          sed 's/=.*/=<REDACTED>/' "$NPM_CONFIG_USERCONFIG" || echo "No .npmrc at userconfig path"
+          echo "=== project .npmrc ==="
+          cat .npmrc 2>/dev/null || echo "No .npmrc in project root"
+          echo "=== npm config list ==="
+          npm config list
+          echo "=== npm whoami ==="
+          npm whoami 2>&1 || echo "whoami failed"
+          echo "=== directory listing npm/ ==="
+          ls -la npm/
+          echo "=== package.json for first platform package ==="
+          cat npm/skills-lint-darwin-arm64/package.json
+          echo "=== files in first platform package ==="
+          ls -laR npm/skills-lint-darwin-arm64/
+          echo "=== dry-run publish first package ==="
+          npm publish ./npm/skills-lint-darwin-arm64 --access public --dry-run 2>&1 || true
+
       - name: Publish platform packages
         if: steps.check.outputs.skip != 'true'
         env:
