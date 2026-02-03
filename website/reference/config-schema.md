@@ -36,6 +36,17 @@ Model name must be one of: `gpt-5`, `gpt-4o`, `gpt-4o-mini`, `gpt-4-turbo`, `gpt
 
 Omit the entire `skill-index-budget` key to disable the rule. Skipped when using `--file`.
 
+## `rules.skill-structure` <span style="font-weight:normal; font-size:0.85em">(optional)</span>
+
+Validates the structure of each SKILL.md file: frontmatter presence, `name` and `description` fields, and non-empty body.
+
+| Value | Behavior |
+|-------|----------|
+| `true` | Rule is enabled |
+| `false` or absent | Rule is skipped |
+
+Runs in both aggregate and `--file` modes.
+
 ## `overrides[]`
 
 | Field | Type | Required | Description |
@@ -77,7 +88,8 @@ Override fields are optional — unspecified fields inherit from global config.
         "gpt-4o": { "warning": 2000, "error": 4000 },
         "gpt-4": { "warning": 1000, "error": 2000 }
       }
-    }
+    },
+    "skill-structure": true
   },
   "overrides": [
     {

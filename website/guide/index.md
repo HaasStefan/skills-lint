@@ -49,6 +49,6 @@ skills-lint
 
 ## Next
 
-- [Configuration](/guide/configuration) — models, overrides, patterns, skill index budget
+- [Configuration](/guide/configuration) — models, overrides, patterns, skill index budget, skill structure
 - [CI Integration](/guide/ci-integration) — GitHub Actions setup
 - [CLI Reference](/reference/cli) — flags and output format

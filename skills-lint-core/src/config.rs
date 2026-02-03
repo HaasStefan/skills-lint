@@ -42,6 +42,8 @@ pub struct RulesConfig {
     pub token_limit: TokenLimitConfig,
     #[serde(rename = "skill-index-budget", default)]
     pub skill_index_budget: Option<SkillIndexBudgetConfig>,
+    #[serde(rename = "skill-structure", default)]
+    pub skill_structure: Option<bool>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -368,6 +370,56 @@ mod tests {
         }"#;
         let config: Config = serde_json::from_str(json).unwrap();
         assert!(config.resolve_skill_index_budget("gpt-4").is_none());
+    }
+
+    #[test]
+    fn test_parse_with_skill_structure() {
+        let json = r#"{
+            "patterns": ["*.md"],
+            "rules": {
+                "token-limit": {
+                    "models": {
+                        "gpt-4o": { "warning": 8000, "error": 16000 }
+                    }
+                },
+                "skill-structure": true
+            }
+        }"#;
+        let config: Config = serde_json::from_str(json).unwrap();
+        assert_eq!(config.rules.skill_structure, Some(true));
+    }
+
+    #[test]
+    fn test_parse_without_skill_structure() {
+        let json = r#"{
+            "patterns": ["*.md"],
+            "rules": {
+                "token-limit": {
+                    "models": {
+                        "gpt-4": { "warning": 8000, "error": 12000 }
+                    }
+                }
+            }
+        }"#;
+        let config: Config = serde_json::from_str(json).unwrap();
+        assert!(config.rules.skill_structure.is_none());
+    }
+
+    #[test]
+    fn test_parse_skill_structure_false() {
+        let json = r#"{
+            "patterns": ["*.md"],
+            "rules": {
+                "token-limit": {
+                    "models": {
+                        "gpt-4o": { "warning": 8000, "error": 16000 }
+                    }
+                },
+                "skill-structure": false
+            }
+        }"#;
+        let config: Config = serde_json::from_str(json).unwrap();
+        assert_eq!(config.rules.skill_structure, Some(false));
     }
 
     #[test]

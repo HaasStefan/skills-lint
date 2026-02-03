@@ -11,7 +11,7 @@ use indicatif::{ProgressBar, ProgressStyle};
 use skills_lint_core::config::Config;
 use skills_lint_core::lint;
 use skills_lint_core::rules::skill_index_budget;
-use skills_lint_core::types::{LintFinding, LintReport, Severity};
+use skills_lint_core::types::{LintFinding, LintReport, Severity, StructureFinding};
 
 use cli::Cli;
 
@@ -59,6 +59,7 @@ fn main() {
     pb.enable_steady_tick(std::time::Duration::from_millis(80));
 
     let mut all_findings: Vec<LintFinding> = Vec::new();
+    let mut all_structure_findings: Vec<StructureFinding> = Vec::new();
     for file in &files {
         let short_name = file
             .strip_prefix("./")
@@ -67,6 +68,15 @@ fn main() {
 
         match lint::lint_file(&config, file) {
             Ok(findings) => all_findings.extend(findings),
+            Err(e) => {
+                pb.finish_and_clear();
+                eprintln!("{} {e}", "error:".red().bold());
+                process::exit(3);
+            }
+        }
+        match lint::check_structure(&config, file) {
+            Ok(Some(sf)) => all_structure_findings.push(sf),
+            Ok(None) => {}
             Err(e) => {
                 pb.finish_and_clear();
                 eprintln!("{} {e}", "error:".red().bold());
@@ -88,7 +98,7 @@ fn main() {
         }
     }
 
-    let report = LintReport::new(all_findings);
+    let report = LintReport::new(all_findings, all_structure_findings);
     println!();
     table::print_report(&report);
 

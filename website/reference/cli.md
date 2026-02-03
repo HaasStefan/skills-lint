@@ -31,6 +31,8 @@ Repeated files show `┆`. Status is `✓ PASS`, `⚠ WARN`, or `✗ ERROR`. Sum
 
 When `skill-index-budget` is configured, an additional `(skill index)` row appears with the aggregate frontmatter token count. This row is not included in the file count.
 
+When `skill-structure` is enabled, a separate **Structure** table appears with columns: **File**, **Structure**, **Status**. Each file shows "valid" on pass or a comma-separated list of issues on error. Structure findings are included in the summary counts.
+
 ## Examples
 
 ```sh

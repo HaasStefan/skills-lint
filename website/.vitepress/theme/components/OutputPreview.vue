@@ -16,7 +16,12 @@ import TerminalWindow from './TerminalWindow.vue'
 (skill index)                           gpt-4o         <span class="ansi-green">312</span>   <span class="ansi-dim">  2,000</span>  <span class="ansi-dim">  4,000</span>   <span class="ansi-green">✓ PASS</span>
   <span class="ansi-dim">┆</span>                                     gpt-4          <span class="ansi-green">312</span>   <span class="ansi-dim">  1,000</span>  <span class="ansi-dim">  2,000</span>   <span class="ansi-green">✓ PASS</span>
 
-  <span class="ansi-bold">Results:</span> <span class="ansi-green">5 passed</span>, <span class="ansi-yellow">2 warnings</span>, <span class="ansi-red">1 error</span> across 2 files</pre>
+<span class="ansi-bold">File                                    Structure          Status</span>
+<span class="ansi-dim">────────────────────────────────────────────────────────────────────</span>
+.github/skills/code-review/SKILL.md     <span class="ansi-green">valid</span>              <span class="ansi-green">✓ PASS</span>
+.github/skills/deploy/SKILL.md          <span class="ansi-green">valid</span>              <span class="ansi-green">✓ PASS</span>
+
+  <span class="ansi-bold">Results:</span> <span class="ansi-green">9 passed</span>, <span class="ansi-yellow">2 warnings</span>, <span class="ansi-red">1 error</span> across 2 files</pre>
     </TerminalWindow>
   </div>
 </template>

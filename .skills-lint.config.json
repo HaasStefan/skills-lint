@@ -21,6 +21,7 @@
         }
       }
     },
+    "skill-structure": true,
     "skill-index-budget": {
       "models": {
         "gpt-5": {

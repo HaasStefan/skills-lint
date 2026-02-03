@@ -19,7 +19,8 @@ Config file: `.skills-lint.config.json` in your project root.
         "gpt-4o": { "warning": 2000, "error": 4000 },
         "gpt-4": { "warning": 1000, "error": 2000 }
       }
-    }
+    },
+    "skill-structure": true
   },
   "overrides": [
     {
@@ -95,6 +96,29 @@ This rule only runs in aggregate mode (all files). It is skipped when using `--f
 :::
 
 This rule is optional. If the `skill-index-budget` key is omitted, the rule is silently skipped.
+
+## Skill Structure
+
+The `skill-structure` rule validates the structure of each SKILL.md file:
+
+1. Has YAML frontmatter (`---` delimiters)
+2. Frontmatter contains `name` with a non-empty string value
+3. Frontmatter contains `description` with a non-empty string value
+4. Body after frontmatter is non-empty
+
+```json
+{
+  "rules": {
+    "skill-structure": true
+  }
+}
+```
+
+Each file produces a single finding: `✓ PASS` with message "valid" if all checks pass, or `✗ ERROR` with a comma-separated list of issues (e.g. "missing name, empty body").
+
+Results appear in a separate **Structure** table in the output.
+
+This rule is optional. Set to `true` to enable. If the key is absent or `false`, the rule is silently skipped. Unlike `skill-index-budget`, this rule runs in both aggregate and `--file` single-file modes.
 
 ## Overrides
 
