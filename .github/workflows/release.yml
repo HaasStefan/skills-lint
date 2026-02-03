@@ -18,7 +18,7 @@ jobs:
             npm-package: skills-lint-darwin-arm64
             binary: skills-lint
           - target: x86_64-apple-darwin
-            runner: macos-13
+            runner: macos-latest
             npm-package: skills-lint-darwin-x64
             binary: skills-lint
           - target: x86_64-unknown-linux-gnu
