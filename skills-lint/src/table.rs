@@ -102,7 +102,12 @@ fn build_token_table(findings: &[&skills_lint_core::types::LintFinding]) -> Tabl
     table
 }
 
-pub fn print_report(report: &LintReport) {
+/// Returns true if the severity should be shown in non-verbose mode.
+fn is_notable(severity: Severity) -> bool {
+    matches!(severity, Severity::Warning | Severity::Error)
+}
+
+pub fn print_report(report: &LintReport, verbose: bool) {
     if report.findings.is_empty() && report.structure_findings.is_empty() {
         println!("  {}", "No files found to lint.".dimmed());
         return;
@@ -122,7 +127,35 @@ pub fn print_report(report: &LintReport) {
     }
 
     let has_aggregate = report.findings.iter().any(|f| f.file == AGGREGATE_LABEL);
-    let total_sections = file_paths.len() + if has_aggregate { 1 } else { 0 };
+
+    // In non-verbose mode, filter to only sections with issues.
+    let file_paths: Vec<&str> = if verbose {
+        file_paths
+    } else {
+        file_paths
+            .into_iter()
+            .filter(|path| {
+                let structure_notable = report
+                    .structure_findings
+                    .iter()
+                    .any(|f| f.file == *path && is_notable(f.severity));
+                let token_notable = report
+                    .findings
+                    .iter()
+                    .any(|f| f.file == *path && is_notable(f.severity));
+                structure_notable || token_notable
+            })
+            .collect()
+    };
+
+    let show_aggregate = has_aggregate
+        && (verbose
+            || report
+                .findings
+                .iter()
+                .any(|f| f.file == AGGREGATE_LABEL && is_notable(f.severity)));
+
+    let total_sections = file_paths.len() + if show_aggregate { 1 } else { 0 };
     let mut section_idx = 0;
 
     // Print each file section.
@@ -140,27 +173,43 @@ pub fn print_report(report: &LintReport) {
             .filter(|f| f.file == *file_path)
             .collect();
 
-        let has_tokens = !token_findings.is_empty();
+        // In non-verbose mode, only show non-pass token rows.
+        let visible_token_findings: Vec<&_> = if verbose {
+            token_findings.clone()
+        } else {
+            token_findings
+                .iter()
+                .filter(|f| is_notable(f.severity))
+                .copied()
+                .collect()
+        };
+
+        let show_structure = structure
+            .map(|sf| verbose || is_notable(sf.severity))
+            .unwrap_or(false);
+        let has_visible_tokens = !visible_token_findings.is_empty();
 
         // Structure finding (inline rule).
         if let Some(sf) = structure {
-            let is_last = !has_tokens;
-            let connector = if is_last { "└─" } else { "├─" };
-            println!(
-                "  {} {}   {}   {}",
-                connector.dimmed(),
-                colored_rule_name("skill-structure", sf.severity),
-                sf.message,
-                colored_status(sf.severity),
-            );
-            if !is_last {
-                println!("  {}", "│".dimmed());
+            if show_structure {
+                let is_last = !has_visible_tokens;
+                let connector = if is_last { "└─" } else { "├─" };
+                println!(
+                    "  {} {}   {}   {}",
+                    connector.dimmed(),
+                    colored_rule_name("skill-structure", sf.severity),
+                    sf.message,
+                    colored_status(sf.severity),
+                );
+                if !is_last {
+                    println!("  {}", "│".dimmed());
+                }
             }
         }
 
         // Token-limit findings (sub-table rule).
-        if has_tokens {
-            let worst = token_findings
+        if has_visible_tokens {
+            let worst = visible_token_findings
                 .iter()
                 .map(|f| f.severity)
                 .max()
@@ -171,7 +220,7 @@ pub fn print_report(report: &LintReport) {
                 colored_rule_name("token-limit", worst),
             );
 
-            let table = build_token_table(&token_findings);
+            let table = build_token_table(&visible_token_findings);
             for line in table.to_string().lines() {
                 println!("     {line}");
             }
@@ -186,16 +235,25 @@ pub fn print_report(report: &LintReport) {
     }
 
     // Aggregate (skill index) section.
-    if has_aggregate {
+    if show_aggregate {
         let aggregate_findings: Vec<&_> = report
             .findings
             .iter()
             .filter(|f| f.file == AGGREGATE_LABEL)
             .collect();
 
+        let visible_aggregate: Vec<&_> = if verbose {
+            aggregate_findings
+        } else {
+            aggregate_findings
+                .into_iter()
+                .filter(|f| is_notable(f.severity))
+                .collect()
+        };
+
         println!("  {}", AGGREGATE_LABEL.bold());
 
-        let worst = aggregate_findings
+        let worst = visible_aggregate
             .iter()
             .map(|f| f.severity)
             .max()
@@ -206,7 +264,7 @@ pub fn print_report(report: &LintReport) {
             colored_rule_name("skill-index-budget", worst),
         );
 
-        let table = build_token_table(&aggregate_findings);
+        let table = build_token_table(&visible_aggregate);
         for line in table.to_string().lines() {
             println!("     {line}");
         }

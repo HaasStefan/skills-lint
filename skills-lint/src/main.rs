@@ -100,7 +100,7 @@ fn main() {
 
     let report = LintReport::new(all_findings, all_structure_findings);
     println!();
-    table::print_report(&report);
+    table::print_report(&report, args.verbose);
 
     let exit_code = match report.worst_severity() {
         Severity::Error => 1,

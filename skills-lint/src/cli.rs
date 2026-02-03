@@ -14,4 +14,8 @@ pub struct Cli {
     /// Suppress the ASCII banner (for CI)
     #[arg(long)]
     pub quiet: bool,
+
+    /// Show all findings including passing rules
+    #[arg(long)]
+    pub verbose: bool,
 }
