@@ -4,14 +4,14 @@ Token counting uses [tiktoken](https://github.com/openai/tiktoken). Encoding is 
 
 ## Model → Encoding
 
-| Model | Encoding |
-|-------|----------|
-| `gpt-5` | `o200k_base` |
-| `gpt-4o` | `o200k_base` |
-| `gpt-4o-mini` | `o200k_base` |
-| `gpt-4-turbo` | `cl100k_base` |
-| `gpt-4` | `cl100k_base` |
-| `gpt-3.5-turbo` | `cl100k_base` |
+| Model | Context Window | Max Input | Encoding |
+|-------|---------------|-----------|----------|
+| `gpt-5` | 400K | 272K | `o200k_base` |
+| `gpt-4o` | 128K | 112K | `o200k_base` |
+| `gpt-4o-mini` | 128K | 112K | `o200k_base` |
+| `gpt-4-turbo` | 128K | 124K | `cl100k_base` |
+| `gpt-4` | 8K | 4K | `cl100k_base` |
+| `gpt-3.5-turbo` | 16K | 12K | `cl100k_base` |
 
 ## Override
 

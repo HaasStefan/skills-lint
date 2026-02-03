@@ -7,12 +7,14 @@ import TerminalWindow from './TerminalWindow.vue'
     <TerminalWindow title="skills-lint">
       <pre class="output-pre"><span class="ansi-bold">File                                    Model       Tokens   Warning   Error   Status</span>
 <span class="ansi-dim">─────────────────────────────────────────────────────────────────────────────────────────</span>
-.github/skills/code-review/SKILL.md     gpt-4o       <span class="ansi-green">4,821</span>   <span class="ansi-dim">  8,000</span>  <span class="ansi-dim"> 12,000</span>   <span class="ansi-green">✓ PASS</span>
-  <span class="ansi-dim">┆</span>                                     gpt-4        <span class="ansi-green">5,102</span>   <span class="ansi-dim">  8,000</span>  <span class="ansi-dim"> 12,000</span>   <span class="ansi-green">✓ PASS</span>
-.github/skills/deploy/SKILL.md          gpt-4o       <span class="ansi-yellow ansi-bold">9,340</span>   <span class="ansi-dim">  8,000</span>  <span class="ansi-dim"> 12,000</span>   <span class="ansi-yellow ansi-bold">⚠ WARN</span>
-  <span class="ansi-dim">┆</span>                                     gpt-4        <span class="ansi-yellow ansi-bold">9,812</span>   <span class="ansi-dim">  8,000</span>  <span class="ansi-dim"> 12,000</span>   <span class="ansi-yellow ansi-bold">⚠ WARN</span>
+.github/skills/code-review/SKILL.md     gpt-5        <span class="ansi-green">4,281</span>   <span class="ansi-dim"> 16,000</span>  <span class="ansi-dim"> 32,000</span>   <span class="ansi-green">✓ PASS</span>
+  <span class="ansi-dim">┆</span>                                     gpt-4o       <span class="ansi-green">4,821</span>   <span class="ansi-dim">  8,000</span>  <span class="ansi-dim"> 16,000</span>   <span class="ansi-green">✓ PASS</span>
+  <span class="ansi-dim">┆</span>                                     gpt-4        <span class="ansi-yellow ansi-bold">2,340</span>   <span class="ansi-dim">  2,000</span>  <span class="ansi-dim">  4,000</span>   <span class="ansi-yellow ansi-bold">⚠ WARN</span>
+.github/skills/deploy/SKILL.md          gpt-5        <span class="ansi-green">8,710</span>   <span class="ansi-dim"> 16,000</span>  <span class="ansi-dim"> 32,000</span>   <span class="ansi-green">✓ PASS</span>
+  <span class="ansi-dim">┆</span>                                     gpt-4o       <span class="ansi-yellow ansi-bold">9,340</span>   <span class="ansi-dim">  8,000</span>  <span class="ansi-dim"> 16,000</span>   <span class="ansi-yellow ansi-bold">⚠ WARN</span>
+  <span class="ansi-dim">┆</span>                                     gpt-4        <span class="ansi-red ansi-bold">4,812</span>   <span class="ansi-dim">  2,000</span>  <span class="ansi-dim">  4,000</span>   <span class="ansi-red ansi-bold">✗ ERROR</span>
 
-  <span class="ansi-bold">Results:</span> <span class="ansi-green">2 passed</span>, <span class="ansi-yellow">2 warnings</span> across 2 files</pre>
+  <span class="ansi-bold">Results:</span> <span class="ansi-green">3 passed</span>, <span class="ansi-yellow">2 warnings</span>, <span class="ansi-red">1 error</span> across 2 files</pre>
     </TerminalWindow>
   </div>
 </template>

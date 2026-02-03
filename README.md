@@ -51,11 +51,11 @@ Create a `.skills-lint.config.json` in your project root:
       "models": {
         "gpt-4o": {
           "warning": 8000,
-          "error": 12000
+          "error": 16000
         },
         "gpt-4": {
-          "warning": 8000,
-          "error": 12000
+          "warning": 2000,
+          "error": 4000
         }
       }
     }
@@ -65,16 +65,16 @@ Create a `.skills-lint.config.json` in your project root:
 
 ### Supported models
 
-| Model | Encoding |
-|---|---|
-| `gpt-5` | `o200k_base` |
-| `gpt-4o` | `o200k_base` |
-| `gpt-4o-mini` | `o200k_base` |
-| `gpt-4-turbo` | `cl100k_base` |
-| `gpt-4` | `cl100k_base` |
-| `gpt-3.5-turbo` | `cl100k_base` |
+| Model | Context | Max Input | Encoding | Recommended Warning | Recommended Error |
+|---|---|---|---|---:|---:|
+| `gpt-5` | 400K | 272K | `o200k_base` | 16,000 | 32,000 |
+| `gpt-4o` | 128K | 112K | `o200k_base` | 8,000 | 16,000 |
+| `gpt-4o-mini` | 128K | 112K | `o200k_base` | 8,000 | 16,000 |
+| `gpt-4-turbo` | 128K | 124K | `cl100k_base` | 8,000 | 16,000 |
+| `gpt-4` | 8K | 4K | `cl100k_base` | 2,000 | 4,000 |
+| `gpt-3.5-turbo` | 16K | 12K | `cl100k_base` | 4,000 | 8,000 |
 
-The encoding is automatically selected based on the model name. You can override it with the optional `encoding` field.
+Skill files are loaded lazily into the model's context window. The recommended budgets keep skill files to roughly 5–10% of the model's effective input capacity. Encoding is auto-selected from the model name and can be overridden with the optional `encoding` field.
 
 ### Fields
 
@@ -96,7 +96,7 @@ Apply different thresholds to specific files:
       "rules": {
         "token-limit": {
           "models": {
-            "gpt-4o": { "warning": 16000, "error": 24000 }
+            "gpt-4o": { "warning": 16000, "error": 32000 }
           }
         }
       }

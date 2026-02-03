@@ -29,8 +29,8 @@ const features = [
 
 <template>
   <div class="home-section">
-    <div class="feature-grid">
-      <div v-for="(f, i) in features" :key="i" class="feature-card">
+    <div class="feature-list">
+      <div v-for="(f, i) in features" :key="i" class="feature-item">
         <h3>{{ f.title }}</h3>
         <p>{{ f.description }}</p>
       </div>

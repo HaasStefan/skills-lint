@@ -37,7 +37,7 @@ Override fields are optional — unspecified fields inherit from global config.
   "rules": {
     "token-limit": {
       "models": {
-        "gpt-4o": { "warning": 8000, "error": 12000 }
+        "gpt-4o": { "warning": 8000, "error": 16000 }
       }
     }
   }
@@ -52,8 +52,8 @@ Override fields are optional — unspecified fields inherit from global config.
   "rules": {
     "token-limit": {
       "models": {
-        "gpt-4o": { "warning": 8000, "error": 12000 },
-        "gpt-4": { "warning": 8000, "error": 12000 }
+        "gpt-4o": { "warning": 8000, "error": 16000 },
+        "gpt-4": { "warning": 2000, "error": 4000 }
       }
     }
   },
@@ -63,7 +63,7 @@ Override fields are optional — unspecified fields inherit from global config.
       "rules": {
         "token-limit": {
           "models": {
-            "gpt-4o": { "warning": 16000, "error": 24000 }
+            "gpt-4o": { "warning": 16000, "error": 32000 }
           }
         }
       }

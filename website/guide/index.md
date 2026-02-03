@@ -22,8 +22,8 @@ Pre-built binaries for macOS, Linux, and Windows (ARM64 + x64).
   "rules": {
     "token-limit": {
       "models": {
-        "gpt-4o": { "warning": 8000, "error": 12000 },
-        "gpt-4": { "warning": 8000, "error": 12000 }
+        "gpt-4o": { "warning": 8000, "error": 16000 },
+        "gpt-4": { "warning": 2000, "error": 4000 }
       }
     }
   }

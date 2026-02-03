@@ -10,9 +10,8 @@ Config file: `.skills-lint.config.json` in your project root.
   "rules": {
     "token-limit": {
       "models": {
-        "gpt-4o": { "warning": 8000, "error": 12000 },
-        "gpt-4o-mini": { "warning": 8000, "error": 12000 },
-        "gpt-4": { "warning": 8000, "error": 12000 }
+        "gpt-4o": { "warning": 8000, "error": 16000 },
+        "gpt-4": { "warning": 2000, "error": 4000 }
       }
     }
   },
@@ -22,7 +21,7 @@ Config file: `.skills-lint.config.json` in your project root.
       "rules": {
         "token-limit": {
           "models": {
-            "gpt-4o": { "warning": 16000, "error": 24000 }
+            "gpt-4o": { "warning": 16000, "error": 32000 }
           }
         }
       }
@@ -51,14 +50,16 @@ Encoding is auto-selected from the model name.
 
 ### Supported models
 
-| Model | Default Encoding |
-|-------|-----------------|
-| `gpt-5` | `o200k_base` |
-| `gpt-4o` | `o200k_base` |
-| `gpt-4o-mini` | `o200k_base` |
-| `gpt-4-turbo` | `cl100k_base` |
-| `gpt-4` | `cl100k_base` |
-| `gpt-3.5-turbo` | `cl100k_base` |
+| Model | Context | Max Input | Max Output | Encoding | Recommended Warning | Recommended Error |
+|-------|---------|-----------|------------|----------|--------------------:|------------------:|
+| `gpt-5` | 400K | 272K | 128K | `o200k_base` | 16,000 | 32,000 |
+| `gpt-4o` | 128K | 112K | 16K | `o200k_base` | 8,000 | 16,000 |
+| `gpt-4o-mini` | 128K | 112K | 16K | `o200k_base` | 8,000 | 16,000 |
+| `gpt-4-turbo` | 128K | 124K | 4K | `cl100k_base` | 8,000 | 16,000 |
+| `gpt-4` | 8K | 4K | 4K | `cl100k_base` | 2,000 | 4,000 |
+| `gpt-3.5-turbo` | 16K | 12K | 4K | `cl100k_base` | 4,000 | 8,000 |
+
+Skill files are loaded lazily into the model's context window when activated. The recommended budgets keep skill files to roughly 5–10% of the model's effective input capacity, leaving room for system instructions, conversation history, and output. Tighter budgets on `gpt-4` and `gpt-3.5-turbo` reflect their smaller context windows.
 
 Unsupported model names are rejected at config load.
 
@@ -74,7 +75,7 @@ Per-file threshold overrides:
       "rules": {
         "token-limit": {
           "models": {
-            "gpt-4o": { "warning": 16000, "error": 24000 }
+            "gpt-4o": { "warning": 16000, "error": 32000 }
           }
         }
       }

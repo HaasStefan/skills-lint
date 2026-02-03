@@ -2,7 +2,6 @@
 import AsciiHero from './AsciiHero.vue'
 import InstallBlock from './InstallBlock.vue'
 import OutputPreview from './OutputPreview.vue'
-import FeatureCards from './FeatureCards.vue'
 </script>
 
 <template>
@@ -10,7 +9,6 @@ import FeatureCards from './FeatureCards.vue'
     <AsciiHero />
     <InstallBlock />
     <OutputPreview />
-    <FeatureCards />
   </div>
 </template>
 

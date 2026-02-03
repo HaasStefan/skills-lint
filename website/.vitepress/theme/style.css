@@ -19,6 +19,10 @@
   --vp-button-brand-hover-bg: #e0e0e0;
   --vp-button-brand-active-bg: #cccccc;
   --vp-button-brand-text: #000000;
+  --vp-c-bg: #0e0e0e;
+  --vp-c-bg-alt: #111111;
+  --vp-c-bg-elv: #161616;
+  --vp-c-bg-soft: #1a1a1a;
 }
 
 /* Terminal palette — always dark regardless of theme */
@@ -111,45 +115,33 @@
   color: var(--vp-c-text-1);
 }
 
-/* Feature card grid */
-.feature-grid {
+/* Feature list */
+.feature-list {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: 24px 32px;
 }
 
 @media (max-width: 960px) {
-  .feature-grid {
+  .feature-list {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 640px) {
-  .feature-grid {
+  .feature-list {
     grid-template-columns: 1fr;
   }
 }
 
-.feature-card {
-  background: var(--vp-c-bg-soft);
-  border: 1px solid var(--vp-c-border);
-  border-radius: 8px;
-  padding: 20px;
-  transition: border-color 0.2s;
-}
-
-.feature-card:hover {
-  border-color: var(--vp-c-text-2);
-}
-
-.feature-card h3 {
+.feature-item h3 {
   color: var(--vp-c-text-1);
   font-size: 0.95rem;
-  margin: 0 0 8px 0;
+  margin: 0 0 4px 0;
   font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', Menlo, Consolas, monospace;
 }
 
-.feature-card p {
+.feature-item p {
   color: var(--vp-c-text-2);
   font-size: 0.8rem;
   margin: 0;
