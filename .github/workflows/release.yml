@@ -136,14 +136,14 @@ jobs:
             skills-lint-win32-x64 \
             skills-lint-win32-arm64; do
             echo "Publishing $pkg..."
-            npm publish "npm/$pkg" --access public
+            npm publish "npm/$pkg" --access public --no-git-checks
           done
 
       - name: Publish root package
         if: steps.check.outputs.skip != 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish npm/skills-lint --access public
+        run: npm publish npm/skills-lint --access public --no-git-checks
 
       - name: Tag release
         if: steps.check.outputs.skip != 'true'
