@@ -49,15 +49,13 @@ Create a `.skills-lint.config.json` in your project root:
   "rules": {
     "token-limit": {
       "models": {
-        "opus-4.5": {
-          "encoding": "cl100k_base",
-          "warning": 8000,
-          "error": 12000
-        },
         "gpt-4o": {
-          "encoding": "o200k_base",
           "warning": 8000,
-          "error": 12000
+          "error": 16000
+        },
+        "gpt-4": {
+          "warning": 2000,
+          "error": 4000
         }
       }
     }
@@ -65,13 +63,26 @@ Create a `.skills-lint.config.json` in your project root:
 }
 ```
 
+### Supported models
+
+| Model | Context | Max Input | Encoding | Recommended Warning | Recommended Error |
+|---|---|---|---|---:|---:|
+| `gpt-5` | 400K | 272K | `o200k_base` | 16,000 | 32,000 |
+| `gpt-4o` | 128K | 112K | `o200k_base` | 8,000 | 16,000 |
+| `gpt-4o-mini` | 128K | 112K | `o200k_base` | 8,000 | 16,000 |
+| `gpt-4-turbo` | 128K | 124K | `cl100k_base` | 8,000 | 16,000 |
+| `gpt-4` | 8K | 4K | `cl100k_base` | 2,000 | 4,000 |
+| `gpt-3.5-turbo` | 16K | 12K | `cl100k_base` | 4,000 | 8,000 |
+
+Skill files are loaded lazily into the model's context window. The recommended budgets keep skill files to roughly 5–10% of the model's effective input capacity. Encoding is auto-selected from the model name and can be overridden with the optional `encoding` field.
+
 ### Fields
 
 - **patterns** -- glob patterns to discover skill files
-- **rules.token-limit.models** -- map of model name to `{ encoding, warning, error }`
-  - `encoding` -- tokenizer encoding (`cl100k_base`, `o200k_base`, etc.)
+- **rules.token-limit.models** -- map of model name to `{ warning, error }`
   - `warning` -- token count threshold for warnings
   - `error` -- token count threshold for errors
+  - `encoding` -- (optional) override the default tokenizer encoding
 
 ### Overrides
 
@@ -85,7 +96,7 @@ Apply different thresholds to specific files:
       "rules": {
         "token-limit": {
           "models": {
-            "opus-4.5": { "warning": 16000, "error": 24000 }
+            "gpt-4o": { "warning": 16000, "error": 32000 }
           }
         }
       }

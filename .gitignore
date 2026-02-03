@@ -1,2 +1,6 @@
 /target
 npm/*/bin/
+website/node_modules/
+website/.vitepress/dist/
+website/.vitepress/cache/
+.skills-lint-cache/

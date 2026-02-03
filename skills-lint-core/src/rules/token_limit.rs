@@ -1,3 +1,4 @@
+use crate::cache::TokenCache;
 use crate::config::ResolvedBudget;
 use crate::tokenizer;
 use crate::types::{LintFinding, Severity};
@@ -5,12 +6,17 @@ use crate::errors::LintError;
 
 /// Check token count for a file against a resolved budget for a specific model.
 pub fn check(
+    rule: &str,
     file: &str,
     model: &str,
     content: &str,
     budget: &ResolvedBudget,
+    cache: Option<&mut TokenCache>,
 ) -> Result<LintFinding, LintError> {
-    let token_count = tokenizer::count_tokens(content, &budget.encoding)?;
+    let token_count = match cache {
+        Some(c) => c.count_tokens(content, &budget.encoding)?,
+        None => tokenizer::count_tokens(content, &budget.encoding)?,
+    };
 
     let severity = if token_count >= budget.error {
         Severity::Error
@@ -21,6 +27,7 @@ pub fn check(
     };
 
     Ok(LintFinding {
+        rule: rule.to_string(),
         file: file.to_string(),
         model: model.to_string(),
         token_count,
@@ -41,7 +48,7 @@ mod tests {
             warning: 8000,
             error: 12000,
         };
-        let finding = check("test.md", "opus-4.5", "Hello", &budget).unwrap();
+        let finding = check("token-limit", "test.md", "gpt-4", "Hello", &budget, None).unwrap();
         assert_eq!(finding.severity, Severity::Pass);
     }
 }

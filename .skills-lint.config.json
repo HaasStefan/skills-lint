@@ -3,25 +3,64 @@
   "rules": {
     "token-limit": {
       "models": {
-        "opus-4.5": {
-          "encoding": "cl100k_base",
-          "warning": 8000,
-          "error": 12000
-        },
-        "sonnet-4.5": {
-          "encoding": "cl100k_base",
-          "warning": 8000,
-          "error": 12000
-        },
         "gpt-5": {
-          "encoding": "o200k_base",
-          "warning": 8000,
-          "error": 12000
+          "warning": 16000,
+          "error": 32000
         },
         "gpt-4o": {
-          "encoding": "o200k_base",
           "warning": 8000,
-          "error": 12000
+          "error": 16000
+        },
+        "gpt-4o-mini": {
+          "warning": 8000,
+          "error": 16000
+        },
+        "gpt-4": {
+          "warning": 2000,
+          "error": 4000
+        }
+      }
+    },
+    "skill-structure": true,
+    "unique-name": true,
+    "unique-description": true,
+    "frontmatter-limit": {
+      "models": {
+        "gpt-5": {
+          "warning": 2000,
+          "error": 4000
+        },
+        "gpt-4o": {
+          "warning": 1000,
+          "error": 2000
+        },
+        "gpt-4o-mini": {
+          "warning": 1000,
+          "error": 2000
+        },
+        "gpt-4": {
+          "warning": 500,
+          "error": 1000
+        }
+      }
+    },
+    "skill-index-budget": {
+      "models": {
+        "gpt-5": {
+          "warning": 4000,
+          "error": 8000
+        },
+        "gpt-4o": {
+          "warning": 2000,
+          "error": 4000
+        },
+        "gpt-4o-mini": {
+          "warning": 2000,
+          "error": 4000
+        },
+        "gpt-4": {
+          "warning": 1000,
+          "error": 2000
         }
       }
     }
@@ -32,7 +71,7 @@
       "rules": {
         "token-limit": {
           "models": {
-            "opus-4.5": { "warning": 16000, "error": 24000 }
+            "gpt-4o": { "warning": 16000, "error": 32000 }
           }
         }
       }

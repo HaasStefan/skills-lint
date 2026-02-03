@@ -9,4 +9,6 @@ colored = "2"
 comfy-table = ">=7.1, <7.2"
 console = "0.15"
 indicatif = "0.17"
+dialoguer = "0.11"
+serde_json = "1"
 skills-lint-core = { path = "../skills-lint-core" }

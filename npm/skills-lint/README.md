@@ -40,20 +40,13 @@ Create a `.skills-lint.config.json` in your project root:
   "rules": {
     "token-limit": {
       "models": {
-        "opus-4.5": {
-          "encoding": "cl100k_base",
-          "warning": 8000,
-          "error": 12000
-        },
-        "sonnet-4.5": {
-          "encoding": "cl100k_base",
-          "warning": 8000,
-          "error": 12000
-        },
         "gpt-4o": {
-          "encoding": "o200k_base",
           "warning": 8000,
-          "error": 12000
+          "error": 16000
+        },
+        "gpt-4": {
+          "warning": 2000,
+          "error": 4000
         }
       }
     }
@@ -61,15 +54,28 @@ Create a `.skills-lint.config.json` in your project root:
 }
 ```
 
+### Supported models
+
+| Model | Context | Max Input | Encoding | Recommended Warning | Recommended Error |
+|---|---|---|---|---:|---:|
+| `gpt-5` | 400K | 272K | `o200k_base` | 16,000 | 32,000 |
+| `gpt-4o` | 128K | 112K | `o200k_base` | 8,000 | 16,000 |
+| `gpt-4o-mini` | 128K | 112K | `o200k_base` | 8,000 | 16,000 |
+| `gpt-4-turbo` | 128K | 124K | `cl100k_base` | 8,000 | 16,000 |
+| `gpt-4` | 8K | 4K | `cl100k_base` | 2,000 | 4,000 |
+| `gpt-3.5-turbo` | 16K | 12K | `cl100k_base` | 4,000 | 8,000 |
+
+Skill files are loaded lazily into the model's context window. The recommended budgets keep skill files to roughly 5–10% of the model's effective input capacity. Encoding is auto-selected from the model name.
+
 ### Fields
 
 | Field | Description |
 |---|---|
 | `patterns` | Glob patterns to discover skill files |
 | `rules.token-limit.models` | Per-model token counting configuration |
-| `models.<name>.encoding` | Tokenizer encoding (`cl100k_base`, `o200k_base`, `p50k_base`, `r50k_base`) |
 | `models.<name>.warning` | Token count threshold for warnings |
 | `models.<name>.error` | Token count threshold for errors |
+| `models.<name>.encoding` | (Optional) override the default tokenizer encoding |
 
 ### Per-file overrides
 
@@ -81,7 +87,7 @@ Override thresholds for specific files:
   "rules": {
     "token-limit": {
       "models": {
-        "opus-4.5": { "encoding": "cl100k_base", "warning": 8000, "error": 12000 }
+        "gpt-4o": { "warning": 8000, "error": 16000 }
       }
     }
   },
@@ -91,7 +97,7 @@ Override thresholds for specific files:
       "rules": {
         "token-limit": {
           "models": {
-            "opus-4.5": { "warning": 16000, "error": 24000 }
+            "gpt-4o": { "warning": 16000, "error": 32000 }
           }
         }
       }
