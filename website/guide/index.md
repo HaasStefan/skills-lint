@@ -14,7 +14,17 @@ Pre-built binaries for macOS, Linux, and Windows (ARM64 + x64).
 
 ## Quick Start
 
-**1. Add `.skills-lint.config.json` to your project root:**
+**1. Create a config file:**
+
+Run the interactive wizard to generate `.skills-lint.config.json`:
+
+```sh
+skills-lint init
+```
+
+This walks you through selecting models, rules, and token budgets with recommended defaults.
+
+Alternatively, create `.skills-lint.config.json` manually in your project root:
 
 ```json
 {

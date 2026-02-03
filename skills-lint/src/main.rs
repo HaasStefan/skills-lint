@@ -1,5 +1,6 @@
 mod banner;
 mod cli;
+mod init;
 mod table;
 
 use std::path::Path;
@@ -13,11 +14,18 @@ use skills_lint_core::lint;
 use skills_lint_core::rules::{skill_index_budget, unique_fields};
 use skills_lint_core::types::{LintFinding, LintReport, Severity, StructureFinding};
 
-use cli::Cli;
+use cli::{Cli, Command};
 
 fn main() {
     let args = Cli::parse();
 
+    match args.command {
+        Some(Command::Init) => init::run(),
+        None => run_lint(args),
+    }
+}
+
+fn run_lint(args: Cli) {
     if !args.quiet {
         println!();
         banner::print_banner();

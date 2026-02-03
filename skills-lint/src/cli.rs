@@ -1,8 +1,11 @@
-use clap::Parser;
+use clap::{Parser, Subcommand};
 
 #[derive(Parser, Debug)]
 #[command(name = "skills-lint", version, about = "Lint agent skill markdown files against per-model token budgets")]
 pub struct Cli {
+    #[command(subcommand)]
+    pub command: Option<Command>,
+
     /// Lint a single file instead of using config patterns
     #[arg(long)]
     pub file: Option<String>,
@@ -18,4 +21,10 @@ pub struct Cli {
     /// Show all findings including passing rules
     #[arg(long)]
     pub verbose: bool,
+}
+
+#[derive(Subcommand, Debug)]
+pub enum Command {
+    /// Initialize a new .skills-lint.config.json
+    Init,
 }
