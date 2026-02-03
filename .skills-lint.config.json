@@ -20,6 +20,26 @@
           "error": 4000
         }
       }
+    },
+    "skill-index-budget": {
+      "models": {
+        "gpt-5": {
+          "warning": 4000,
+          "error": 8000
+        },
+        "gpt-4o": {
+          "warning": 2000,
+          "error": 4000
+        },
+        "gpt-4o-mini": {
+          "warning": 2000,
+          "error": 4000
+        },
+        "gpt-4": {
+          "warning": 1000,
+          "error": 2000
+        }
+      }
     }
   },
   "overrides": [

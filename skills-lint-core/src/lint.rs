@@ -3,7 +3,7 @@ use std::path::Path;
 use crate::config::Config;
 use crate::discovery;
 use crate::errors::LintError;
-use crate::rules::token_limit;
+use crate::rules::{skill_index_budget, token_limit};
 use crate::types::{LintFinding, LintReport};
 
 /// Discover files based on config patterns.
@@ -37,6 +37,7 @@ pub fn run(config: &Config) -> Result<LintReport, LintError> {
     for file in &files {
         findings.extend(lint_file(config, file)?);
     }
+    findings.extend(skill_index_budget::check_all(config, &files)?);
     Ok(LintReport::new(findings))
 }
 

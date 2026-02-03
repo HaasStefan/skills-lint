@@ -29,6 +29,8 @@ Table columns: **File**, **Model**, **Tokens**, **Warning**, **Error**, **Status
 
 Repeated files show `┆`. Status is `✓ PASS`, `⚠ WARN`, or `✗ ERROR`. Summary line follows the table.
 
+When `skill-index-budget` is configured, an additional `(skill index)` row appears with the aggregate frontmatter token count. This row is not included in the file count.
+
 ## Examples
 
 ```sh

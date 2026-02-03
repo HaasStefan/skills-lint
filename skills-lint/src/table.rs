@@ -2,6 +2,7 @@ use colored::Colorize;
 use comfy_table::modifiers::UTF8_ROUND_CORNERS;
 use comfy_table::presets::UTF8_FULL_CONDENSED;
 use comfy_table::{Attribute, Cell, CellAlignment, Color, ContentArrangement, Table};
+use skills_lint_core::rules::skill_index_budget::AGGREGATE_LABEL;
 use skills_lint_core::types::{LintReport, Severity};
 
 fn format_number(n: usize) -> String {
@@ -112,7 +113,12 @@ pub fn print_report(report: &LintReport) {
     let passed = total - errors - warnings;
 
     let unique_files = {
-        let mut files: Vec<&str> = report.findings.iter().map(|f| f.file.as_str()).collect();
+        let mut files: Vec<&str> = report
+            .findings
+            .iter()
+            .map(|f| f.file.as_str())
+            .filter(|f| *f != AGGREGATE_LABEL)
+            .collect();
         files.dedup();
         files.len()
     };

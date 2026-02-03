@@ -10,6 +10,7 @@ use colored::Colorize;
 use indicatif::{ProgressBar, ProgressStyle};
 use skills_lint_core::config::Config;
 use skills_lint_core::lint;
+use skills_lint_core::rules::skill_index_budget;
 use skills_lint_core::types::{LintFinding, LintReport, Severity};
 
 use cli::Cli;
@@ -76,6 +77,16 @@ fn main() {
     }
 
     pb.finish_and_clear();
+
+    if args.file.is_none() {
+        match skill_index_budget::check_all(&config, &files) {
+            Ok(findings) => all_findings.extend(findings),
+            Err(e) => {
+                eprintln!("{} {e}", "error:".red().bold());
+                process::exit(3);
+            }
+        }
+    }
 
     let report = LintReport::new(all_findings);
     println!();

@@ -40,10 +40,17 @@ pub struct Config {
 pub struct RulesConfig {
     #[serde(rename = "token-limit")]
     pub token_limit: TokenLimitConfig,
+    #[serde(rename = "skill-index-budget", default)]
+    pub skill_index_budget: Option<SkillIndexBudgetConfig>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct TokenLimitConfig {
+    pub models: HashMap<String, ModelBudget>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct SkillIndexBudgetConfig {
     pub models: HashMap<String, ModelBudget>,
 }
 
@@ -99,6 +106,16 @@ impl Config {
                 ));
             }
         }
+        if let Some(ref sib) = self.rules.skill_index_budget {
+            for model in sib.models.keys() {
+                if default_encoding(model).is_none() {
+                    return Err(LintError::UnsupportedModel(
+                        model.clone(),
+                        supported_model_names(),
+                    ));
+                }
+            }
+        }
         for entry in &self.overrides {
             for model in entry.rules.token_limit.models.keys() {
                 if default_encoding(model).is_none() {
@@ -145,6 +162,22 @@ impl Config {
             encoding: encoding.unwrap_or(default_enc),
             warning,
             error,
+        })
+    }
+
+    /// Resolve the skill-index-budget for a given model (no per-file overrides).
+    pub fn resolve_skill_index_budget(&self, model: &str) -> Option<ResolvedBudget> {
+        let sib = self.rules.skill_index_budget.as_ref()?;
+        let budget = sib.models.get(model)?;
+
+        let default_enc = default_encoding(model)
+            .unwrap_or("cl100k_base")
+            .to_string();
+
+        Some(ResolvedBudget {
+            encoding: budget.encoding.clone().unwrap_or(default_enc),
+            warning: budget.warning,
+            error: budget.error,
         })
     }
 }
@@ -249,6 +282,107 @@ mod tests {
                 "token-limit": {
                     "models": {
                         "not-a-real-model": { "warning": 8000, "error": 12000 }
+                    }
+                }
+            }
+        }"#;
+        let config: Config = serde_json::from_str(json).unwrap();
+        assert!(config.validate().is_err());
+    }
+
+    #[test]
+    fn test_parse_with_skill_index_budget() {
+        let json = r#"{
+            "patterns": ["*.md"],
+            "rules": {
+                "token-limit": {
+                    "models": {
+                        "gpt-4o": { "warning": 8000, "error": 16000 }
+                    }
+                },
+                "skill-index-budget": {
+                    "models": {
+                        "gpt-4o": { "warning": 2000, "error": 4000 }
+                    }
+                }
+            }
+        }"#;
+        let config: Config = serde_json::from_str(json).unwrap();
+        assert!(config.rules.skill_index_budget.is_some());
+        let sib = config.rules.skill_index_budget.as_ref().unwrap();
+        assert_eq!(sib.models.get("gpt-4o").unwrap().warning, 2000);
+        assert_eq!(sib.models.get("gpt-4o").unwrap().error, 4000);
+    }
+
+    #[test]
+    fn test_parse_without_skill_index_budget() {
+        let json = r#"{
+            "patterns": ["*.md"],
+            "rules": {
+                "token-limit": {
+                    "models": {
+                        "gpt-4": { "warning": 8000, "error": 12000 }
+                    }
+                }
+            }
+        }"#;
+        let config: Config = serde_json::from_str(json).unwrap();
+        assert!(config.rules.skill_index_budget.is_none());
+    }
+
+    #[test]
+    fn test_resolve_skill_index_budget() {
+        let json = r#"{
+            "patterns": ["*.md"],
+            "rules": {
+                "token-limit": {
+                    "models": {
+                        "gpt-4o": { "warning": 8000, "error": 16000 }
+                    }
+                },
+                "skill-index-budget": {
+                    "models": {
+                        "gpt-4o": { "warning": 2000, "error": 4000 }
+                    }
+                }
+            }
+        }"#;
+        let config: Config = serde_json::from_str(json).unwrap();
+        let budget = config.resolve_skill_index_budget("gpt-4o").unwrap();
+        assert_eq!(budget.warning, 2000);
+        assert_eq!(budget.error, 4000);
+        assert_eq!(budget.encoding, "o200k_base");
+    }
+
+    #[test]
+    fn test_resolve_skill_index_budget_unconfigured() {
+        let json = r#"{
+            "patterns": ["*.md"],
+            "rules": {
+                "token-limit": {
+                    "models": {
+                        "gpt-4": { "warning": 8000, "error": 12000 }
+                    }
+                }
+            }
+        }"#;
+        let config: Config = serde_json::from_str(json).unwrap();
+        assert!(config.resolve_skill_index_budget("gpt-4").is_none());
+    }
+
+    #[test]
+    fn test_validate_rejects_unsupported_model_in_skill_index_budget() {
+        let json = r#"{
+            "patterns": ["*.md"],
+            "rules": {
+                "token-limit": {
+                    "models": {
+                        "gpt-4": { "warning": 8000, "error": 12000 }
+                    }
+                },
+                "skill-index-budget": {
+                    "models": {
+                        "not-a-real-model": { "warning": 2000, "error": 4000 }
                     }
                 }
             }
