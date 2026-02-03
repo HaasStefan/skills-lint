@@ -21,6 +21,7 @@ impl fmt::Display for Severity {
 /// A single lint finding for one file × model combination.
 #[derive(Debug, Clone)]
 pub struct LintFinding {
+    pub rule: String,
     pub file: String,
     pub model: String,
     pub token_count: usize,

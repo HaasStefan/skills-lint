@@ -3,7 +3,7 @@ use std::path::Path;
 use crate::config::Config;
 use crate::discovery;
 use crate::errors::LintError;
-use crate::rules::{skill_index_budget, skill_structure, token_limit};
+use crate::rules::{frontmatter_limit, skill_index_budget, skill_structure, token_limit};
 use crate::types::{LintFinding, LintReport, StructureFinding};
 
 /// Discover files based on config patterns.
@@ -22,10 +22,12 @@ pub fn lint_file(config: &Config, file: &str) -> Result<Vec<LintFinding>, LintEr
     let mut findings = Vec::new();
     for model in &model_names {
         if let Some(budget) = config.resolve_token_limit(file, model) {
-            let finding = token_limit::check(file, model, &content, &budget)?;
+            let finding = token_limit::check("token-limit", file, model, &content, &budget)?;
             findings.push(finding);
         }
     }
+
+    findings.extend(frontmatter_limit::check_file(config, file)?);
 
     Ok(findings)
 }

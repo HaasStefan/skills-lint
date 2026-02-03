@@ -42,6 +42,8 @@ pub struct RulesConfig {
     pub token_limit: TokenLimitConfig,
     #[serde(rename = "skill-index-budget", default)]
     pub skill_index_budget: Option<SkillIndexBudgetConfig>,
+    #[serde(rename = "frontmatter-limit", default)]
+    pub frontmatter_limit: Option<FrontmatterLimitConfig>,
     #[serde(rename = "skill-structure", default)]
     pub skill_structure: Option<bool>,
 }
@@ -53,6 +55,11 @@ pub struct TokenLimitConfig {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct SkillIndexBudgetConfig {
+    pub models: HashMap<String, ModelBudget>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct FrontmatterLimitConfig {
     pub models: HashMap<String, ModelBudget>,
 }
 
@@ -118,6 +125,16 @@ impl Config {
                 }
             }
         }
+        if let Some(ref fl) = self.rules.frontmatter_limit {
+            for model in fl.models.keys() {
+                if default_encoding(model).is_none() {
+                    return Err(LintError::UnsupportedModel(
+                        model.clone(),
+                        supported_model_names(),
+                    ));
+                }
+            }
+        }
         for entry in &self.overrides {
             for model in entry.rules.token_limit.models.keys() {
                 if default_encoding(model).is_none() {
@@ -164,6 +181,22 @@ impl Config {
             encoding: encoding.unwrap_or(default_enc),
             warning,
             error,
+        })
+    }
+
+    /// Resolve the frontmatter-limit budget for a given model (no per-file overrides).
+    pub fn resolve_frontmatter_limit(&self, model: &str) -> Option<ResolvedBudget> {
+        let fl = self.rules.frontmatter_limit.as_ref()?;
+        let budget = fl.models.get(model)?;
+
+        let default_enc = default_encoding(model)
+            .unwrap_or("cl100k_base")
+            .to_string();
+
+        Some(ResolvedBudget {
+            encoding: budget.encoding.clone().unwrap_or(default_enc),
+            warning: budget.warning,
+            error: budget.error,
         })
     }
 

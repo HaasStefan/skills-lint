@@ -5,6 +5,7 @@ use crate::errors::LintError;
 
 /// Check token count for a file against a resolved budget for a specific model.
 pub fn check(
+    rule: &str,
     file: &str,
     model: &str,
     content: &str,
@@ -21,6 +22,7 @@ pub fn check(
     };
 
     Ok(LintFinding {
+        rule: rule.to_string(),
         file: file.to_string(),
         model: model.to_string(),
         token_count,
@@ -41,7 +43,7 @@ mod tests {
             warning: 8000,
             error: 12000,
         };
-        let finding = check("test.md", "gpt-4", "Hello", &budget).unwrap();
+        let finding = check("token-limit", "test.md", "gpt-4", "Hello", &budget).unwrap();
         assert_eq!(finding.severity, Severity::Pass);
     }
 }

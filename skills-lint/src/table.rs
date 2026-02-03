@@ -167,13 +167,29 @@ pub fn print_report(report: &LintReport, verbose: bool) {
             .structure_findings
             .iter()
             .find(|f| f.file == *file_path);
+
+        // Partition findings by rule.
+        let frontmatter_findings: Vec<&_> = report
+            .findings
+            .iter()
+            .filter(|f| f.file == *file_path && f.rule == "frontmatter-limit")
+            .collect();
         let token_findings: Vec<&_> = report
             .findings
             .iter()
-            .filter(|f| f.file == *file_path)
+            .filter(|f| f.file == *file_path && f.rule == "token-limit")
             .collect();
 
-        // In non-verbose mode, only show non-pass token rows.
+        // In non-verbose mode, only show non-pass rows.
+        let visible_frontmatter_findings: Vec<&_> = if verbose {
+            frontmatter_findings.clone()
+        } else {
+            frontmatter_findings
+                .iter()
+                .filter(|f| is_notable(f.severity))
+                .copied()
+                .collect()
+        };
         let visible_token_findings: Vec<&_> = if verbose {
             token_findings.clone()
         } else {
@@ -187,12 +203,13 @@ pub fn print_report(report: &LintReport, verbose: bool) {
         let show_structure = structure
             .map(|sf| verbose || is_notable(sf.severity))
             .unwrap_or(false);
+        let has_visible_frontmatter = !visible_frontmatter_findings.is_empty();
         let has_visible_tokens = !visible_token_findings.is_empty();
 
         // Structure finding (inline rule).
         if let Some(sf) = structure {
             if show_structure {
-                let is_last = !has_visible_tokens;
+                let is_last = !has_visible_frontmatter && !has_visible_tokens;
                 let connector = if is_last { "└─" } else { "├─" };
                 println!(
                     "  {} {}   {}   {}",
@@ -204,6 +221,31 @@ pub fn print_report(report: &LintReport, verbose: bool) {
                 if !is_last {
                     println!("  {}", "│".dimmed());
                 }
+            }
+        }
+
+        // Frontmatter-limit findings (sub-table rule).
+        if has_visible_frontmatter {
+            let is_last = !has_visible_tokens;
+            let connector = if is_last { "└─" } else { "├─" };
+            let worst = visible_frontmatter_findings
+                .iter()
+                .map(|f| f.severity)
+                .max()
+                .unwrap_or(Severity::Pass);
+            println!(
+                "  {} {}",
+                connector.dimmed(),
+                colored_rule_name("frontmatter-limit", worst),
+            );
+
+            let table = build_token_table(&visible_frontmatter_findings);
+            for line in table.to_string().lines() {
+                println!("     {line}");
+            }
+
+            if !is_last {
+                println!("  {}", "│".dimmed());
             }
         }
 

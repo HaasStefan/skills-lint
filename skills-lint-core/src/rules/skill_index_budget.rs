@@ -40,7 +40,7 @@ pub fn check(
     model: &str,
     budget: &ResolvedBudget,
 ) -> Result<LintFinding, LintError> {
-    token_limit::check(AGGREGATE_LABEL, model, aggregated, budget)
+    token_limit::check("skill-index-budget", AGGREGATE_LABEL, model, aggregated, budget)
 }
 
 /// Check all discovered files' frontmatter against the skill-index-budget rule.
