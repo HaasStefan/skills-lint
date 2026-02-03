@@ -1,0 +1,55 @@
+#!/usr/bin/env node
+
+const { execFileSync } = require("child_process");
+const { join } = require("path");
+
+const PLATFORMS = {
+  "darwin arm64": "@haasstefan/skills-lint-darwin-arm64",
+  "darwin x64": "@haasstefan/skills-lint-darwin-x64",
+  "linux x64": "@haasstefan/skills-lint-linux-x64",
+  "linux arm64": "@haasstefan/skills-lint-linux-arm64",
+  "win32 x64": "@haasstefan/skills-lint-win32-x64",
+  "win32 arm64": "@haasstefan/skills-lint-win32-arm64",
+};
+
+const key = `${process.platform} ${process.arch}`;
+const pkg = PLATFORMS[key];
+
+if (!pkg) {
+  console.error(
+    `skills-lint: unsupported platform ${process.platform} ${process.arch}`
+  );
+  process.exit(1);
+}
+
+const { existsSync } = require("fs");
+const ext = process.platform === "win32" ? ".exe" : "";
+const binName = `skills-lint${ext}`;
+let binPath;
+
+try {
+  binPath = require.resolve(join(pkg, "bin", binName));
+} catch {
+  // Fall back to sibling directory (for local development)
+  const shortPkg = pkg.replace("@haasstefan/", "");
+  const localPath = join(__dirname, "..", "..", shortPkg, "bin", binName);
+  if (existsSync(localPath)) {
+    binPath = localPath;
+  } else {
+    console.error(
+      `skills-lint: could not find the binary for your platform (${key}).\n` +
+        `Expected package "${pkg}" to be installed.\n` +
+        `Try reinstalling with: npm install @haasstefan/skills-lint`
+    );
+    process.exit(1);
+  }
+}
+
+try {
+  execFileSync(binPath, process.argv.slice(2), { stdio: "inherit" });
+} catch (err) {
+  if (err.status !== undefined) {
+    process.exit(err.status);
+  }
+  throw err;
+}
